@@ -6,7 +6,7 @@ Mod client Fabric pour Minecraft 1.21.11. Créateur : **OrsonBlockTV**.
 
 1. Installe Fabric Loader pour Minecraft 1.21.11 avec Fabric API.
 2. Lance `./gradlew build` (ou `gradlew.bat build` sous Windows).
-3. Copie `build/libs/craftaria-utils-1.4.0.jar` dans le dossier `mods`.
+3. Copie `build/libs/craftaria-utils-1.4.1.jar` dans le dossier `mods`.
 4. Dans Minecraft, ouvre **Options → Contrôles → Raccourcis divers** pour attribuer les touches `/four`, connexion et cuisson.
 
 ## Fonctions
@@ -28,3 +28,5 @@ Le menu choisi est conservé pour la session : une déconnexion renvoie vers le 
 Le panneau en haut à droite affiche les joueurs connectés et le ping, actualisés toutes les 30 secondes. Animation de recherche et icône hors ligne de Minecraft ; barres colorées selon la latence.
 
 Les réglages utilisent un menu dédié avec quatre sections. Les raccourcis clavier et souris se modifient directement dans la section Raccourcis, avec synchronisation et sauvegarde dans les contrôles Minecraft. Échap retire une affectation ; les conflits sont signalés.
+
+La connexion au serveur réutilise la fiche enregistrée dans `servers.dat`, y compris la préférence du pack de ressources. Si aucune fiche n’existe, une entrée de connexion directe est créée pour permettre à Minecraft de sauvegarder le choix lors de la première demande.

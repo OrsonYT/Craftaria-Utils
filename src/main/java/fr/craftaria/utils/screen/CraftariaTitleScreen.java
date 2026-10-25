@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.option.ServerList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -46,8 +47,17 @@ public final class CraftariaTitleScreen extends Screen {
         connecting = true;
         connectButton.setMessage(Text.translatable("craftaria_utils.menu.connecting"));
         connectButton.active = false;
-        ConnectScreen.connect(this, client, ServerAddress.parse(SERVER),
-                new ServerInfo("Craftaria", SERVER, ServerInfo.ServerType.OTHER), false, null);
+        ServerList servers = new ServerList(client);
+        servers.loadFile();
+        ServerInfo server = servers.get(SERVER);
+        if (server == null) {
+            server = new ServerInfo("Craftaria", SERVER, ServerInfo.ServerType.OTHER);
+            // Like vanilla direct connections, keep a hidden entry in servers.dat.
+            // Vanilla's pack prompt can then persist the player's actual choice.
+            servers.add(server, true);
+            servers.saveFile();
+        }
+        ConnectScreen.connect(this, client, ServerAddress.parse(SERVER), server, false, null);
     }
 
     public void renderScene(DrawContext context, int width, int height) {

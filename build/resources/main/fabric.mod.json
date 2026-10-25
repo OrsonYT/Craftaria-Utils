@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "craftaria_utils",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "name": "Craftaria Utils",
   "description": "Utilitaires client pour Craftaria.",
   "authors": [
