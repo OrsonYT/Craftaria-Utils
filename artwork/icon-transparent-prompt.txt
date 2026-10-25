@@ -1,0 +1,1 @@
+Built-in imagegen edit. Remove ONLY the solid near-black exterior background and replace it with genuine transparent alpha. Preserve the existing white/lavender voxel emblem, dark navy internal details, gold crown and red jewel. Keep the emblem centered on a square transparent canvas.

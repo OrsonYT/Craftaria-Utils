@@ -1,0 +1,3 @@
+Generated with the built-in imagegen tool using the user-supplied logo as reference.
+
+Use case: logo-brand. Create a square Minecraft Fabric mod icon for Craftaria Utils using the attached logo as the visual reference. Faithfully preserve the reference identity: chunky white/light lavender three-dimensional block monogram with dark navy cutout details, topped by a golden yellow pointed royal crown with one red jewel. Reconstruct the emblem cleanly and sharply with a Minecraft pixel-art/voxel aesthetic, centered and fully visible, generous margin, readable at tiny mod-list icon sizes. Solid near-black background. Remove all screenshot borders, stray cropped letters, UI and other surrounding content. No new text, no watermark. Deliver one square icon.
