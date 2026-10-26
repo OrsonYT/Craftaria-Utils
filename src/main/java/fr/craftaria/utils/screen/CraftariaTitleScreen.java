@@ -1,5 +1,7 @@
 package fr.craftaria.utils.screen;
 
+import fr.craftaria.utils.wallpaper.WallpaperManager;
+
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,7 +16,6 @@ import net.minecraft.util.Identifier;
 
 public final class CraftariaTitleScreen extends Screen {
     public static final String SERVER = "play.craftaria.fr";
-    private static final Identifier BACKGROUND = Identifier.of("craftaria_utils", "fondbase.png");
     private static final Identifier LOGO = Identifier.of("craftaria_utils", "icon-transparent.png");
     private boolean connecting;
     private final ServerStatusPanel serverStatus = new ServerStatusPanel();
@@ -61,10 +62,7 @@ public final class CraftariaTitleScreen extends Screen {
     }
 
     public void renderScene(DrawContext context, int width, int height) {
-        float cover = Math.max(width / 2560f, height / 1600f);
-        int w = (int)Math.ceil(2560*cover), h = (int)Math.ceil(1600*cover);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND, (width-w)/2, (height-h)/2,
-                0, 0, w, h, 2560, 1600, 2560, 1600);
+        WallpaperManager.draw(context, width, height);
         for (int x = 0; x < width * .65f; x += 2) {
             int alpha = Math.round(72 * (1 - x / (width * .65f)));
             context.fill(x, 0, x+2, height, alpha << 24);

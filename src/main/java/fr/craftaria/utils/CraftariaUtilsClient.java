@@ -5,6 +5,7 @@ import fr.craftaria.utils.cooking.CookingQueue;
 import fr.craftaria.utils.screen.CraftariaConfigScreen;
 import fr.craftaria.utils.screen.CookingScreen;
 import fr.craftaria.utils.screen.LoginConfirmScreen;
+import fr.craftaria.utils.wallpaper.WallpaperManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -23,6 +24,7 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
 
     @Override public void onInitializeClient() {
         ModConfig.load();
+        WallpaperManager.initializeDirectory();
         fourKey = register("key.craftaria_utils.four");
         loginKey = register("key.craftaria_utils.login");
         cookingKey = register("key.craftaria_utils.cooking");
@@ -50,7 +52,11 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
         String itemId = Registries.ITEM.getId(stack.getItem()).toString();
         int damage = stack.getDamage();
         if (!itemId.equals(previousItem) || damage < previousDamage) repairSent = false;
-        if (!repairSent && damage >= stack.getMaxDamage() / 2) { sendCommand(client, "repair"); repairSent = true; }
+        int remainingPercent = (stack.getMaxDamage() - damage) * 100 / stack.getMaxDamage();
+        if (!repairSent && damage > 0 && remainingPercent <= ModConfig.get().repairThresholdPercent) {
+            sendCommand(client, "repair");
+            repairSent = true;
+        }
         previousDamage = damage; previousItem = itemId;
     }
 }

@@ -6,7 +6,12 @@
     "GameMenuScreenMixin",
     "MinecraftClientMixin",
     "ConnectScreenMixin",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "OptionsScreenMixin",
+    "InGameHudMixin",
+    "LoadingBackgroundMixin",
+    "SplashOverlayMixin",
+    "ChatScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

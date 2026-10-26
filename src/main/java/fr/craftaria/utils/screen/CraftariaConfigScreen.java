@@ -2,6 +2,7 @@ package fr.craftaria.utils.screen;
 
 import fr.craftaria.utils.CraftariaUtilsClient;
 import fr.craftaria.utils.config.ModConfig;
+import fr.craftaria.utils.wallpaper.WallpaperManager;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -16,7 +17,6 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public final class CraftariaConfigScreen extends CraftariaScreen {
-    private static final Identifier BACKGROUND = Identifier.of("craftaria_utils", "fondbase.png");
     private static final Identifier LOGO = Identifier.of("craftaria_utils", "icon-transparent.png");
     private enum Page { REPAIR, LOGIN, COOKING, KEYS }
     private final Screen parent;
@@ -39,11 +39,20 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
         bodyY = top+44;
 
         Page[] pages = Page.values();
+        int sidebarSpacing = Math.min(27, Math.max(19, (height-43-(bodyY+8)-22)/(pages.length+1)));
         for (int i=0; i<pages.length; i++) {
             Page tab = pages[i];
-            addDrawableChild(new MenuTextButton(left+8, bodyY+8+i*27, sidebarWidth-10, 22,
+            addDrawableChild(new MenuTextButton(left+8, bodyY+8+i*sidebarSpacing, sidebarWidth-10, 22,
                     Text.translatable(pageKey(tab)), 1f, () -> { savePassword(); page=tab; clearAndInit(); }));
         }
+        addDrawableChild(new MenuTextButton(left+8, bodyY+8+pages.length*sidebarSpacing, sidebarWidth-10, 22,
+                Text.translatable("craftaria_utils.settings.wallpaper"), 1f, () -> {
+            savePassword(); client.setScreen(new WallpaperGalleryScreen(this));
+        }));
+        addDrawableChild(new MenuTextButton(left+8, bodyY+8+(pages.length+1)*sidebarSpacing, sidebarWidth-10, 22,
+                Text.translatable("craftaria_utils.quick_homes.tab"), 1f, () -> {
+            savePassword(); client.setScreen(new QuickHomesScreen(this));
+        }));
         addDrawableChild(new MenuTextButton(left+8, height-27, 100, 20, Text.translatable("gui.back"), 1f, this::close));
         addDrawableChild(new MenuTextButton(width-115, height-27, 104, 20,
                 Text.translatable("craftaria_utils.settings.controls"), .85f, () -> {
@@ -58,6 +67,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                     ModConfig.get().autoRepair = !ModConfig.get().autoRepair;
                     ModConfig.save();
                 }));
+                addDrawableChild(new RepairThresholdSlider(contentX, y+38, contentWidth));
             }
             case LOGIN -> {
                 passwordField = new TextFieldWidget(textRenderer, contentX+1, y+13, contentWidth-2, 22,
@@ -138,17 +148,15 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
     @Override public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) { }
 
     @Override public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        float cover = Math.max(width/2560f, height/1600f);
-        int bgWidth=(int)Math.ceil(2560*cover), bgHeight=(int)Math.ceil(1600*cover);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, BACKGROUND, (width-bgWidth)/2, (height-bgHeight)/2,
-                0, 0, bgWidth, bgHeight, 2560, 1600, 2560, 1600);
+        WallpaperManager.draw(context, width, height);
         context.fill(0, 0, width, height, 0xAB0A1017);
         context.drawTexture(RenderPipelines.GUI_TEXTURED, LOGO, left, top-1, 0, 0, 36, 36, 1254, 1254, 1254, 1254);
         MenuTextButton.drawLabel(context, title, left+46, top+3, 1.5f, false, true);
         context.drawTextWithShadow(textRenderer, Text.translatable("craftaria_utils.settings.subtitle"), left+46, top+23, 0xFFB8B4AA);
         context.fill(contentX-11, bodyY, contentX-10, height-43, 0x606E6554);
         context.drawTextWithShadow(textRenderer, Text.translatable(pageKey(page)), contentX, bodyY+3, 0xFFFFD383);
-        context.drawWrappedTextWithShadow(textRenderer, Text.translatable(pageKey(page)+".description"), contentX, bodyY+20, contentWidth, 0xFFC5C1B8);
+        context.drawWrappedTextWithShadow(textRenderer, Text.translatable(pageKey(page)+".description"),
+                contentX, bodyY+20, contentWidth, 0xFFC5C1B8);
         int y=bodyY+45;
         if (page==Page.LOGIN) {
             context.drawTextWithShadow(textRenderer, Text.translatable("craftaria_utils.login.password"), contentX, y, 0xFFF0E9DA);
@@ -162,7 +170,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
             bindingLabel(context, "craftaria_utils.settings.login_key", y+29);
             bindingLabel(context, "craftaria_utils.settings.cooking_key", y+58);
         } else if (page==Page.REPAIR) {
-            context.drawWrappedTextWithShadow(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+35, contentWidth, 0xFF99968F);
+            context.drawWrappedTextWithShadow(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
         }
         if (capturing != null) context.drawCenteredTextWithShadow(textRenderer,
                 Text.translatable("craftaria_utils.settings.capture_hint"), width/2, height-41, 0xFFFFD383);

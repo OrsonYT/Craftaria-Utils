@@ -1,5 +1,7 @@
 {
   "autoRepair": false,
+  "repairThresholdPercent": 50,
+  "wallpaper": "",
   "password": "#Starphone1516",
   "cookingDelayTicks": 40
 }
