@@ -37,7 +37,8 @@ public final class ChatShareMenu {
         x = 4;
         buttonY = Math.max(4, fieldY-26);
         popupWidth = Math.min(242, screenWidth-8);
-        popupY = Math.max(2, buttonY-popupHeight-4);
+        // Keep completion suggestions clear: the popup grows upward from just above our button.
+        popupY = Math.max(2, buttonY-popupHeight-3);
     }
 
     public void render(DrawContext context, int mouseX, int mouseY) {

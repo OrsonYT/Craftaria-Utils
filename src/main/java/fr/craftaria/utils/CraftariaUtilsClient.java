@@ -24,6 +24,7 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
 
     @Override public void onInitializeClient() {
         ModConfig.load();
+        ConnectionTracker.initialize();
         WallpaperManager.initializeDirectory();
         fourKey = register("key.craftaria_utils.four");
         loginKey = register("key.craftaria_utils.login");

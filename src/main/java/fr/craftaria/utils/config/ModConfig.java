@@ -23,6 +23,7 @@ public final class ModConfig {
         data.cookingDelayTicks = Math.clamp(Math.round(data.cookingDelayTicks / 2.0f) * 2, 2, 100);
         data.repairThresholdPercent = Math.clamp(data.repairThresholdPercent, 1, 100);
         if (data.wallpaper == null) data.wallpaper = "";
+        if (data.trackedPlayers == null) data.trackedPlayers = "";
         var homes = new LinkedHashMap<String, QuickHome>();
         if (data.quickHomes != null) for (QuickHome home : data.quickHomes) {
             if (home != null && QuickHome.validName(home.name)) {
@@ -43,6 +44,9 @@ public final class ModConfig {
         public String wallpaper = "";
         public String password = "";
         public int cookingDelayTicks = 40;
+        public boolean connectionTrackerEnabled = false;
+        /** Comma or semicolon separated Minecraft usernames to watch. */
+        public String trackedPlayers = "";
         public List<QuickHome> quickHomes = new ArrayList<>();
     }
 }

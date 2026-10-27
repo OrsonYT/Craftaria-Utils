@@ -37,10 +37,13 @@ public class ChatActionMenu {
         buttonY=Math.max(4,fieldY-26);
         popupWidth=Math.min(296,screenWidth-8);
         popupX=Math.max(4,Math.min(buttonX,screenWidth-popupWidth-4));
-        visibleRows=Math.max(1,Math.min(entries.size(),(buttonY-24)/ROW_HEIGHT));
+        // Suggestions are rendered immediately above the chat field. Keep our popup below them,
+        // using the area between the field and the bottom buttons instead of covering suggestions.
+        int availableHeight=Math.max(22,fieldY-buttonY-4);
+        visibleRows=Math.max(1,Math.min(entries.size(),(availableHeight-22)/ROW_HEIGHT));
         offset=Math.clamp(offset,0,Math.max(0,entries.size()-visibleRows));
         popupHeight=22+visibleRows*ROW_HEIGHT;
-        popupY=Math.max(2,buttonY-popupHeight-4);
+        popupY=Math.max(2,buttonY-popupHeight-3);
     }
     public void render(DrawContext context,int mouseX,int mouseY) {
         var font=MinecraftClient.getInstance().textRenderer;

@@ -1,6 +1,7 @@
 package fr.craftaria.utils.mixin;
 
 import fr.craftaria.utils.cooking.CookingQueue;
+import fr.craftaria.utils.ConnectionTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -17,6 +18,7 @@ public abstract class InGameHudMixin {
     @Inject(method = "render", at = @At("TAIL"))
     private void craftariaUtils$renderCookingProgress(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
+        ConnectionTracker.render(context, client);
         if (!CookingQueue.isActive() || client.player == null || client.currentScreen != null) return;
 
         int total = CookingQueue.getTotalCount();

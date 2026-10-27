@@ -11,6 +11,7 @@ import fr.craftaria.utils.config.QuickHome;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.input.KeyInput;
@@ -28,11 +29,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ChatScreenMixin extends Screen {
     @Shadow protected TextFieldWidget chatField;
     @Shadow protected String originalChatText;
+    @Shadow private ChatInputSuggestor chatInputSuggestor;
     @Unique private ChatShareMenu craftariaUtils$shareMenu;
     @Unique private ChatTeleportMenu craftariaUtils$teleportMenu;
     @Unique private ChatGeneralMenu craftariaUtils$generalMenu;
 
     protected ChatScreenMixin(Text title) { super(title); }
+
+    @Unique private boolean craftariaUtils$hideButtons() {
+        return (chatInputSuggestor != null && chatInputSuggestor.isOpen())
+                || (chatField != null && !chatField.getText().isBlank());
+    }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void craftariaUtils$initShareMenu(CallbackInfo ci) {
@@ -81,6 +88,12 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void craftariaUtils$renderShareMenu(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (craftariaUtils$hideButtons()) {
+            craftariaUtils$shareMenu.close();
+            craftariaUtils$teleportMenu.close();
+            craftariaUtils$generalMenu.close();
+            return;
+        }
         if (craftariaUtils$shareMenu != null) {
             craftariaUtils$shareMenu.layout(width, chatField.getY());
             craftariaUtils$shareMenu.render(context, mouseX, mouseY);
@@ -97,6 +110,8 @@ public abstract class ChatScreenMixin extends Screen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void craftariaUtils$clickShareMenu(Click click, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
+        // Leave clicks on Minecraft's completion window entirely to the vanilla suggestor.
+        if (craftariaUtils$hideButtons()) return;
         if (craftariaUtils$generalMenu != null && craftariaUtils$generalMenu.mouseClicked(click.x(), click.y(), click.button())) {
             if (craftariaUtils$shareMenu != null) craftariaUtils$shareMenu.close();
             if (craftariaUtils$teleportMenu != null) craftariaUtils$teleportMenu.close();
@@ -132,6 +147,7 @@ public abstract class ChatScreenMixin extends Screen {
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
     private void craftariaUtils$shareMenuScroll(double mouseX, double mouseY, double horizontal, double vertical,
                                               CallbackInfoReturnable<Boolean> cir) {
+        if (craftariaUtils$hideButtons()) return;
         if ((craftariaUtils$generalMenu != null && craftariaUtils$generalMenu.mouseScrolled(mouseX, mouseY, vertical))
                 || (craftariaUtils$teleportMenu != null && craftariaUtils$teleportMenu.mouseScrolled(mouseX, mouseY, vertical))) {
             cir.setReturnValue(true);
