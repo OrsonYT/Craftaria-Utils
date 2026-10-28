@@ -4,14 +4,12 @@ import fr.craftaria.utils.CraftariaUtilsClient;
 import fr.craftaria.utils.TrackedPlayerSkins;
 import fr.craftaria.utils.config.ModConfig;
 import fr.craftaria.utils.wallpaper.WallpaperManager;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
@@ -84,7 +82,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                 passwordField.setText(ModConfig.get().password);
                 passwordField.setEditableColor(0xFFF0E9DA);
                 passwordField.setDrawsBackground(false);
-                passwordField.addFormatter((value, cursor) -> Text.literal("•".repeat(value.length())).asOrderedText());
+                passwordField.setRenderTextProvider((value, cursor) -> Text.literal("•".repeat(value.length())).asOrderedText());
                 passwordField.setChangedListener(value -> { ModConfig.get().password=value; ModConfig.save(); });
                 addDrawableChild(passwordField);
                 addBindingRow(CraftariaUtilsClient.loginKey, "craftaria_utils.settings.login_key", y+52);
@@ -169,20 +167,20 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
         capturing = null;
     }
 
-    @Override public boolean keyPressed(KeyInput input) {
+    @Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (capturing != null) {
-            bind(input.key()==GLFW.GLFW_KEY_ESCAPE ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(input));
+            bind(keyCode==GLFW.GLFW_KEY_ESCAPE ? InputUtil.UNKNOWN_KEY : InputUtil.fromKeyCode(keyCode, scanCode));
             return true;
         }
-        return super.keyPressed(input);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    @Override public boolean mouseClicked(Click click, boolean doubled) {
+    @Override public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (capturing != null) {
-            bind(InputUtil.Type.MOUSE.createFromCode(click.button()));
+            bind(InputUtil.Type.MOUSE.createFromCode(button));
             return true;
         }
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void savePassword() {
@@ -197,12 +195,12 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
     @Override public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         WallpaperManager.draw(context, width, height);
         context.fill(0, 0, width, height, 0xAB0A1017);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, LOGO, left, top-1, 0, 0, 36, 36, 1254, 1254, 1254, 1254);
+        GuiTextures.draw(context, LOGO, left, top-1, 0, 0, 36, 36, 1254, 1254, 1254, 1254);
         MenuTextButton.drawLabel(context, title, left+46, top+3, 1.5f, false, true);
         context.drawTextWithShadow(textRenderer, Text.translatable("craftaria_utils.settings.subtitle"), left+46, top+23, 0xFFB8B4AA);
         context.fill(contentX-11, bodyY, contentX-10, height-43, 0x606E6554);
         context.drawTextWithShadow(textRenderer, Text.translatable(pageKey(page)), contentX, bodyY+3, 0xFFFFD383);
-        context.drawWrappedTextWithShadow(textRenderer, Text.translatable(pageKey(page)+".description"),
+        context.drawTextWrapped(textRenderer, Text.translatable(pageKey(page)+".description"),
                 contentX, bodyY+20, contentWidth, 0xFFC5C1B8);
         int y=bodyY+45;
         if (page==Page.LOGIN) {
@@ -210,14 +208,14 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
             context.fill(contentX, y+12, contentX+contentWidth, y+36, 0x50101720);
             context.fill(contentX, y+35, contentX+contentWidth, y+36, 0x806E6554);
             bindingLabel(context, "craftaria_utils.settings.login_key", y+52);
-            if (y+103 < height-46) context.drawWrappedTextWithShadow(textRenderer, Text.translatable("craftaria_utils.password_storage"), contentX, y+83, contentWidth, 0xFF99968F);
+            if (y+103 < height-46) context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.password_storage"), contentX, y+83, contentWidth, 0xFF99968F);
         } else if (page==Page.COOKING) bindingLabel(context, "craftaria_utils.settings.cooking_key", y+35);
         else if (page==Page.KEYS) {
             bindingLabel(context, "craftaria_utils.settings.four_key", y);
             bindingLabel(context, "craftaria_utils.settings.login_key", y+29);
             bindingLabel(context, "craftaria_utils.settings.cooking_key", y+58);
         } else if (page==Page.REPAIR) {
-            context.drawWrappedTextWithShadow(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
+            context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
         } else if (page==Page.TRACKER) {
             context.drawTextWithShadow(textRenderer, Text.translatable("craftaria_utils.tracker.player_name"), contentX, y+34, 0xFFF0E9DA);
             context.fill(contentX, y+47, contentX+contentWidth, y+71, 0x50101720);

@@ -1,13 +1,11 @@
 package fr.craftaria.utils.screen;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -38,7 +36,7 @@ public final class OptionsImageButton extends ClickableWidget {
                 int minX = imageWidth, minY = imageHeight, maxX = -1, maxY = -1;
                 for (int y = 0; y < imageHeight; y++) {
                     for (int x = 0; x < imageWidth; x++) {
-                        int color = image.getColorArgb(x, y);
+                        int color = image.getColor(x, y);
                         int brightness = Math.max((color >> 16) & 255, Math.max((color >> 8) & 255, color & 255));
                         if ((color >>> 24) >= 128 && brightness > 20) {
                             minX = Math.min(minX, x); minY = Math.min(minY, y);
@@ -65,7 +63,7 @@ public final class OptionsImageButton extends ClickableWidget {
             fallback.render(context, mouseX, mouseY, delta);
             return;
         }
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, getX(), getY(), sourceX, sourceY,
+        GuiTextures.draw(context, TEXTURE, getX(), getY(), sourceX, sourceY,
                 getWidth(), getHeight(), sourceWidth, sourceHeight, imageWidth, imageHeight);
         if (isHovered() || isFocused()) {
             int left = getX(), top = getY(), right = left + getWidth(), bottom = top + getHeight();
@@ -77,9 +75,9 @@ public final class OptionsImageButton extends ClickableWidget {
         }
     }
 
-    @Override public void onClick(Click click, boolean doubled) { action.run(); }
-    @Override public boolean keyPressed(KeyInput input) {
-        if (active && isFocused() && (input.key()==GLFW.GLFW_KEY_ENTER || input.key()==GLFW.GLFW_KEY_SPACE || input.key()==GLFW.GLFW_KEY_KP_ENTER)) {
+    @Override public void onClick(double mouseX, double mouseY) { action.run(); }
+    @Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (active && isFocused() && (keyCode==GLFW.GLFW_KEY_ENTER || keyCode==GLFW.GLFW_KEY_SPACE || keyCode==GLFW.GLFW_KEY_KP_ENTER)) {
             playDownSound(MinecraftClient.getInstance().getSoundManager());
             action.run();
             return true;

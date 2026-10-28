@@ -166,5 +166,9 @@
   "craftaria_utils.general.sb": "Scoreboard",
   "craftaria_utils.general.sb.description": "Affiche ou masque le scoreboard.",
   "craftaria_utils.general.b": "Souhaiter la bienvenue",
-  "craftaria_utils.general.b.description": "Envoie le message de bienvenue prédéfini du serveur."
+  "craftaria_utils.general.b.description": "Envoie le message de bienvenue prédéfini du serveur.",
+  "key.categories.craftaria_utils": "Craftaria Utils",
+  "craftaria_utils.connection.failed": "Connexion impossible",
+  "craftaria_utils.connection.retry": "Réessayer",
+  "craftaria_utils.connection.back": "Retour au menu"
 }

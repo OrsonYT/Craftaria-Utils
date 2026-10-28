@@ -67,7 +67,7 @@ public final class CookingQueue {
         workingHotbarSlot = emptySlot == -1 ? displacedHotbarSlot : emptySlot;
         evacuatedHotbarSlot = displacedHotbarSlot;
         evacuatedInventorySlot = reserveSlot;
-        originalSelectedSlot = owner.getInventory().getSelectedSlot();
+        originalSelectedSlot = owner.getInventory().selectedSlot;
         sourceSlot = -1;
         ticksLeft = 0;
         totalCount = QUEUE.size();
@@ -152,7 +152,7 @@ public final class CookingQueue {
     }
 
     private static void selectHotbar(MinecraftClient client, int slot) {
-        owner.getInventory().setSelectedSlot(slot);
+        owner.getInventory().selectedSlot = slot;
         client.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(slot));
     }
 

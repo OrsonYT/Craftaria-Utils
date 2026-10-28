@@ -1,10 +1,10 @@
 package fr.craftaria.utils.mixin;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import fr.craftaria.utils.wallpaper.WallpaperManager;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -27,10 +27,10 @@ public abstract class SplashOverlayMixin {
     @Unique private static final Identifier CRAFTARIA_LOGO = Identifier.of("craftaria_utils", "icon-transparent.png");
 
     @Redirect(method = "render", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/DrawContext;fill(IIIII)V"))
-    private void craftariaUtils$reloadBackground(DrawContext context, int x, int y, int right, int bottom, int color) {
+            target = "Lnet/minecraft/client/gui/DrawContext;fill(Lnet/minecraft/client/render/RenderLayer;IIIII)V"))
+    private void craftariaUtils$reloadBackground(DrawContext context, RenderLayer layer, int x, int y, int right, int bottom, int color) {
         if (!reloading) {
-            context.fill(x, y, right, bottom, color);
+            context.fill(layer, x, y, right, bottom, color);
             return;
         }
         int alpha = color >>> 24;
@@ -39,12 +39,12 @@ public abstract class SplashOverlayMixin {
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIFFIIIIIII)V"))
-    private void craftariaUtils$startupLogoOnly(DrawContext context, RenderPipeline pipeline, Identifier texture,
-            int x, int y, float u, float v, int width, int height, int regionWidth, int regionHeight,
-            int textureWidth, int textureHeight, int color) {
-        if (!reloading) context.drawTexture(pipeline, texture, x, y, u, v, width, height,
-                regionWidth, regionHeight, textureWidth, textureHeight, color);
+            target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIFFIIII)V"))
+    private void craftariaUtils$startupLogoOnly(DrawContext context, Identifier texture,
+            int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight,
+            int textureWidth, int textureHeight) {
+        if (!reloading) context.drawTexture(texture, x, y, width, height, u, v,
+                regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
     @Inject(method = "render", at = @At("TAIL"))
@@ -56,7 +56,7 @@ public abstract class SplashOverlayMixin {
         if (Math.round(alpha * 255) < 4) return;
         int color = (Math.round(alpha * 255) << 24) | 0xFFFFFF;
         int centerX = context.getScaledWindowWidth() / 2, centerY = context.getScaledWindowHeight() / 2;
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, CRAFTARIA_LOGO, centerX - 32, centerY - 44,
+        GuiTextures.draw(context, CRAFTARIA_LOGO, centerX - 32, centerY - 44,
                 0, 0, 64, 64, 1254, 1254, 1254, 1254, color);
         context.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer,
                 Text.translatable("craftaria_utils.wallpaper.reloading"), centerX, centerY + 34, color);

@@ -41,7 +41,7 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
         });
     }
     private static KeyBinding register(String translationKey) {
-        return KeyBindingHelper.registerKeyBinding(new KeyBinding(translationKey, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, KeyBinding.Category.MISC));
+        return KeyBindingHelper.registerKeyBinding(new KeyBinding(translationKey, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "key.categories.craftaria_utils"));
     }
     public static void sendCommand(MinecraftClient client, String command) {
         if (client.player != null && client.getNetworkHandler() != null) client.getNetworkHandler().sendChatCommand(command);

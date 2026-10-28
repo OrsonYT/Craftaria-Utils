@@ -2,13 +2,12 @@ package fr.craftaria.utils.screen;
 
 import fr.craftaria.utils.cooking.CookingQueue;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gl.RenderPipelines;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -46,11 +45,11 @@ public final class CookingScreen extends HandledScreen<PlayerScreenHandler> {
 
     private Text startLabel() { return Text.translatable("craftaria_utils.cooking.start", selected.size()); }
 
-    @Override public boolean mouseClicked(Click click, boolean doubled) {
+    @Override public boolean mouseClicked(double mouseX, double mouseY, int button) {
         for (Slot slot : handler.slots) {
-            if (click.x() >= x + slot.x && click.x() < x + slot.x + 16
-                    && click.y() >= y + slot.y && click.y() < y + slot.y + 16) {
-                if (click.button() == 0 && slot.inventory == client.player.getInventory()
+            if (mouseX >= x + slot.x && mouseX < x + slot.x + 16
+                    && mouseY >= y + slot.y && mouseY < y + slot.y + 16) {
+                if (button == 0 && slot.inventory == client.player.getInventory()
                         && slot.getIndex() < 36 && slot.hasStack()) {
                     if (!selected.add(slot.getIndex())) selected.remove(slot.getIndex());
                     cookButton.setMessage(startLabel());
@@ -59,22 +58,22 @@ public final class CookingScreen extends HandledScreen<PlayerScreenHandler> {
                 return true;
             }
         }
-        return super.mouseClicked(click, doubled);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
         // Selection never sends inventory clicks, swaps, drops, or crafting actions to the server.
     }
 
-    @Override protected void drawSlot(DrawContext context, Slot slot, int mouseX, int mouseY) {
-        super.drawSlot(context, slot, mouseX, mouseY);
+    @Override protected void drawSlot(DrawContext context, Slot slot) {
+        super.drawSlot(context, slot);
         if (slot.inventory == client.player.getInventory() && selected.contains(slot.getIndex())) {
             context.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, 0x8033DD55);
         }
     }
 
     @Override protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 256, 256);
+        GuiTextures.draw(context, TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 256, 256);
         InventoryScreen.drawEntity(context, x + 26, y + 8, x + 75, y + 78, 30, 0.0625F,
                 (float)this.mouseX, (float)this.mouseY, client.player);
     }
@@ -89,6 +88,6 @@ public final class CookingScreen extends HandledScreen<PlayerScreenHandler> {
         drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
-    @Override protected void applyBlur(DrawContext context) { }
+    @Override protected void applyBlur(float delta) { }
     @Override public void close() { client.setScreen(parent); }
 }

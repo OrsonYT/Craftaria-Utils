@@ -1,11 +1,10 @@
 package fr.craftaria.utils.screen;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.network.NetworkingBackend;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -44,7 +43,7 @@ public final class ServerStatusPanel {
             try {
                 current.add(info, () -> { }, () -> MinecraftClient.getInstance().execute(() -> {
                     if (!closed && pinger == current) info.setStatus(ServerInfo.Status.SUCCESSFUL);
-                }), NetworkingBackend.remote(true));
+                }));
             } catch (Exception exception) {
                 MinecraftClient.getInstance().execute(() -> {
                     if (!closed && pinger == current) info.setStatus(ServerInfo.Status.UNREACHABLE);
@@ -78,8 +77,8 @@ public final class ServerStatusPanel {
         var font = MinecraftClient.getInstance().textRenderer;
         // Match the size, right margin and muted text of the credits below.
         float scale = Math.clamp(Math.min(screenWidth / 960f, screenHeight / 540f), 0.5f, 0.7f);
-        context.getMatrices().pushMatrix();
-        context.getMatrices().scale(scale, scale);
+        context.getMatrices().push();
+        context.getMatrices().scale(scale, scale, 1);
         int right = (int)((screenWidth - 6) / scale), top = (int)(8 / scale);
         boolean pending = server.getStatus() == ServerInfo.Status.PINGING;
         boolean online = server.getStatus() == ServerInfo.Status.SUCCESSFUL;
@@ -102,10 +101,10 @@ public final class ServerStatusPanel {
             int frame = (int)((System.nanoTime()-startedAt)/100_000_000L % 8);
             if (frame > 4) frame = 8-frame;
             Identifier sprite = Identifier.ofVanilla(pending ? "server_list/pinging_"+(frame+1) : "server_list/unreachable");
-            context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, sprite, barsX, barsY, 10, 8);
+            context.drawGuiTexture(sprite, barsX, barsY, 10, 8);
         }
         context.drawTextWithShadow(font, latency, barsX-5-font.getWidth(latency), top+10,
                 online || pending ? 0xFFCDC7BA : 0xFFD39E96);
-        context.getMatrices().popMatrix();
+        context.getMatrices().pop();
     }
 }

@@ -1,6 +1,8 @@
 package fr.craftaria.utils.mixin;
 
 import fr.craftaria.utils.screen.CraftariaTitleScreen;
+import fr.craftaria.utils.screen.MenuTextButton;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
@@ -23,9 +25,11 @@ public abstract class ConnectScreenMixin extends Screen {
     private void craftariaUtils$positionCancel(CallbackInfo ci) {
         if (parent instanceof CraftariaTitleScreen) {
             float s = Math.min(width/960f, height/540f);
-            for (var child : children()) if (child instanceof ButtonWidget button) {
-                button.setX(Math.round(64*s));
-                button.setY(Math.round(302*s));
+            for (var child : java.util.List.copyOf(children())) if (child instanceof ButtonWidget button) {
+                remove(button);
+                addDrawableChild(new MenuTextButton(Math.round(64*s), Math.round(302*s),
+                        Math.round(280*s), Math.max(20, Math.round(32*s)), Text.translatable("gui.cancel"),
+                        2.1f*s, button::onPress));
             }
         }
     }
@@ -34,7 +38,8 @@ public abstract class ConnectScreenMixin extends Screen {
     private void craftariaUtils$render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (parent instanceof CraftariaTitleScreen menu) {
             menu.renderConnecting(context, width, height, status);
-            super.render(context, mouseX, mouseY, delta);
+            // Screen.render draws its background again in 1.21.1, hiding our logo and title.
+            for (var child : children()) if (child instanceof Drawable drawable) drawable.render(context, mouseX, mouseY, delta);
             ci.cancel();
         }
     }

@@ -1,11 +1,9 @@
 package fr.craftaria.utils.screen;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import java.util.function.Supplier;
@@ -28,9 +26,9 @@ public final class SettingsButton extends ClickableWidget {
         String text = font.trimToWidth(getMessage().getString(), getWidth()-14);
         context.drawTextWithShadow(font, Text.literal(text), getX()+7, getY()+7, highlighted ? 0xFFFFD383 : 0xFFF0E9DA);
     }
-    @Override public void onClick(Click click, boolean doubled) { action.run(); }
-    @Override public boolean keyPressed(KeyInput input) {
-        if (active && isFocused() && (input.key()==GLFW.GLFW_KEY_ENTER || input.key()==GLFW.GLFW_KEY_SPACE || input.key()==GLFW.GLFW_KEY_KP_ENTER)) {
+    @Override public void onClick(double mouseX, double mouseY) { action.run(); }
+    @Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (active && isFocused() && (keyCode==GLFW.GLFW_KEY_ENTER || keyCode==GLFW.GLFW_KEY_SPACE || keyCode==GLFW.GLFW_KEY_KP_ENTER)) {
             playDownSound(MinecraftClient.getInstance().getSoundManager());
             action.run();
             return true;

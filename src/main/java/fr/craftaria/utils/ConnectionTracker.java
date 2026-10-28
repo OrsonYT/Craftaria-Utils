@@ -40,7 +40,7 @@ public final class ConnectionTracker {
         MinecraftClient client = MinecraftClient.getInstance();
         playerName = candidate;
         expiresAt = System.currentTimeMillis() + 5500;
-        client.getSoundManager().play(net.minecraft.client.sound.PositionedSoundInstance.ui(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 0.85f));
+        client.getSoundManager().play(net.minecraft.client.sound.PositionedSoundInstance.master(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 0.85f));
     }
 
     public static void render(DrawContext context, MinecraftClient client) {

@@ -1,11 +1,9 @@
 package fr.craftaria.utils.screen;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
@@ -26,18 +24,18 @@ public final class MenuTextButton extends ClickableWidget {
 
     public static void drawLabel(DrawContext context, Text label, int x, int y, float scale, boolean highlighted, boolean active) {
         var renderer = MinecraftClient.getInstance().textRenderer;
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(x, y);
-        context.getMatrices().scale(scale, scale);
+        context.getMatrices().push();
+        context.getMatrices().translate(x, y, 0);
+        context.getMatrices().scale(scale, scale, 1);
         if (highlighted && active) context.drawText(renderer, ">", -12, 0, 0xFFFFCC65, true);
         context.drawText(renderer, label, 1, 2, 0xFF292421, false);
         context.drawText(renderer, label, 0, 0, highlighted && active ? 0xFFFFDA83 : 0xFFF7F4EA, false);
-        context.getMatrices().popMatrix();
+        context.getMatrices().pop();
     }
 
-    @Override public void onClick(Click click, boolean doubled) { action.run(); }
-    @Override public boolean keyPressed(KeyInput input) {
-        if (active && isFocused() && (input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER || input.key() == GLFW.GLFW_KEY_SPACE)) {
+    @Override public void onClick(double mouseX, double mouseY) { action.run(); }
+    @Override public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (active && isFocused() && (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_SPACE)) {
             playDownSound(MinecraftClient.getInstance().getSoundManager());
             action.run();
             return true;

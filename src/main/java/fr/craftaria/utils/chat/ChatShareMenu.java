@@ -44,7 +44,7 @@ public final class ChatShareMenu {
     public void render(DrawContext context, int mouseX, int mouseY) {
         var client = MinecraftClient.getInstance();
         var font = client.textRenderer;
-        context.createNewRootLayer();
+
         boolean buttonHovered = inside(mouseX, mouseY, x, buttonY, BUTTON_SIZE, BUTTON_SIZE);
         context.fill(x, buttonY, x+BUTTON_SIZE, buttonY+BUTTON_SIZE, 0xDC101720);
         border(context, x, buttonY, BUTTON_SIZE, BUTTON_SIZE, buttonHovered || open ? 0xFFFFD383 : 0xFF756B57);
@@ -105,7 +105,7 @@ public final class ChatShareMenu {
         return mouseX >= x && mouseX < x+width && mouseY >= y && mouseY < y+height;
     }
     private static void clickSound() {
-        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.ui(SoundEvents.UI_BUTTON_CLICK, 1f));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1f));
     }
     private static void border(DrawContext context, int x, int y, int width, int height, int color) {
         context.fill(x,y,x+width,y+1,color);

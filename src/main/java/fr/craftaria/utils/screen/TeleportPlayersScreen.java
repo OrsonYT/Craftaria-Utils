@@ -57,16 +57,16 @@ public final class TeleportPlayersScreen extends CraftariaScreen {
     private void updatePlayers() {
         if (client.getNetworkHandler()==null) players=List.of();
         else players=client.getNetworkHandler().getPlayerList().stream()
-                .filter(entry -> client.player==null || !entry.getProfile().id().equals(client.player.getUuid()))
-                .sorted(Comparator.comparing(entry -> entry.getProfile().name(),String.CASE_INSENSITIVE_ORDER)).toList();
-        roster=players.stream().map(entry -> entry.getProfile().id()+":"+entry.getProfile().name()).toList();
+                .filter(entry -> client.player==null || !entry.getProfile().getId().equals(client.player.getUuid()))
+                .sorted(Comparator.comparing(entry -> entry.getProfile().getName(),String.CASE_INSENSITIVE_ORDER)).toList();
+        roster=players.stream().map(entry -> entry.getProfile().getId()+":"+entry.getProfile().getName()).toList();
         refreshRows();
     }
     private void refreshRows() {
         for (var button:buttons) remove(button);
         buttons.clear();
         String filter=query.strip().toLowerCase(Locale.ROOT);
-        List<PlayerListEntry> filtered=players.stream().filter(entry -> entry.getProfile().name().toLowerCase(Locale.ROOT).contains(filter)).toList();
+        List<PlayerListEntry> filtered=players.stream().filter(entry -> entry.getProfile().getName().toLowerCase(Locale.ROOT).contains(filter)).toList();
         filteredCount=filtered.size();
         int columns=contentWidth>=440?2:1;
         int rows=Math.max(1,(height-146)/34);
@@ -78,7 +78,7 @@ public final class TeleportPlayersScreen extends CraftariaScreen {
         int tileWidth=(contentWidth-8*(columns-1))/columns;
         for (int i=0;i<pageSize && page*pageSize+i<filtered.size();i++) {
             PlayerListEntry entry=filtered.get(page*pageSize+i);
-            String name=entry.getProfile().name();
+            String name=entry.getProfile().getName();
             var button=addDrawableChild(new PlayerRequestButton(left+(i%columns)*(tileWidth+8),112+(i/columns)*34,tileWidth,entry,
                     Text.translatable("craftaria_utils.teleport.request_hint","/"+mode.command+" "+name),() -> request(entry)));
             buttons.add(button);
@@ -86,10 +86,10 @@ public final class TeleportPlayersScreen extends CraftariaScreen {
     }
     private void request(PlayerListEntry target) {
         if (sent) return;
-        if (client.getNetworkHandler()==null || client.getNetworkHandler().getPlayerListEntry(target.getProfile().id())==null) {
+        if (client.getNetworkHandler()==null || client.getNetworkHandler().getPlayerListEntry(target.getProfile().getId())==null) {
             error=true; updatePlayers(); return;
         }
-        String name=target.getProfile().name();
+        String name=target.getProfile().getName();
         if (name.isBlank() || name.chars().anyMatch(Character::isWhitespace)) { error=true; return; }
         sent=true;
         CraftariaUtilsClient.sendCommand(client,mode.command+" "+name);
@@ -99,9 +99,9 @@ public final class TeleportPlayersScreen extends CraftariaScreen {
         if (++ticks%20!=0) return;
         if (client.getNetworkHandler()==null) { close(); return; }
         List<String> current=client.getNetworkHandler().getPlayerList().stream()
-                .filter(entry -> client.player==null || !entry.getProfile().id().equals(client.player.getUuid()))
-                .sorted(Comparator.comparing(entry -> entry.getProfile().name(),String.CASE_INSENSITIVE_ORDER))
-                .map(entry -> entry.getProfile().id()+":"+entry.getProfile().name()).toList();
+                .filter(entry -> client.player==null || !entry.getProfile().getId().equals(client.player.getUuid()))
+                .sorted(Comparator.comparing(entry -> entry.getProfile().getName(),String.CASE_INSENSITIVE_ORDER))
+                .map(entry -> entry.getProfile().getId()+":"+entry.getProfile().getName()).toList();
         if (!current.equals(roster)) updatePlayers();
     }
     @Override public boolean mouseScrolled(double mouseX,double mouseY,double horizontal,double vertical) {

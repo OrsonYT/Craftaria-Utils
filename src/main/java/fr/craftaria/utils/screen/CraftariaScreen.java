@@ -9,7 +9,7 @@ public abstract class CraftariaScreen extends Screen {
     protected CraftariaScreen(Text title) { super(title); }
 
     @Override
-    protected void applyBlur(DrawContext context) {
+    protected void applyBlur(float delta) {
         // Vanilla may already have blurred this frame while replacing the pause screen.
     }
 }

@@ -1,11 +1,9 @@
 package fr.craftaria.utils;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.client.util.SkinTextures;
 
 import java.util.Locale;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,15 +27,12 @@ public final class TrackedPlayerSkins {
             PENDING.remove(key);
             return;
         }
-        java.util.concurrent.CompletableFuture.supplyAsync(() -> {
-            try { return client.getApiServices().profileRepository().findProfileByName(name).orElse(null); }
-            catch (Exception ignored) { return null; }
-        }).thenCompose(profile -> {
-            if (profile == null) return java.util.concurrent.CompletableFuture.completedFuture(null);
-            return client.getSkinProvider().fetchSkinTextures(new GameProfile(profile.id(), profile.name()));
+        net.minecraft.block.entity.SkullBlockEntity.fetchProfileByName(name).thenCompose(profile -> {
+            if (profile.isEmpty()) return java.util.concurrent.CompletableFuture.<SkinTextures>completedFuture(null);
+            return client.getSkinProvider().fetchSkinTextures(profile.get());
         }).whenComplete((textures, error) -> client.execute(() -> {
             PENDING.remove(key);
-            if (error == null && textures != null) textures.ifPresent(value -> SKINS.put(key, value));
+            if (error == null && textures != null) SKINS.put(key, textures);
         }));
     }
 

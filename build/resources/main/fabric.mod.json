@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "craftaria_utils",
-  "version": "1.9.0",
+  "version": "1.10.4+1.21.1",
   "name": "Craftaria Utils",
   "description": "Utilitaires client pour Craftaria.",
   "authors": [
@@ -18,7 +18,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.18.0",
-    "minecraft": "~1.21.11",
+    "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": "*"
   },

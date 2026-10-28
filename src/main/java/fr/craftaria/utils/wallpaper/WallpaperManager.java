@@ -3,7 +3,7 @@ package fr.craftaria.utils.wallpaper;
 import fr.craftaria.utils.config.ModConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -121,8 +121,8 @@ public final class WallpaperManager {
         NativeImageBackedTexture texture = null;
         try {
             for (int y = 0; y < decoded.getHeight(); y++)
-                for (int x = 0; x < decoded.getWidth(); x++) image.setColorArgb(x, y, decoded.getRGB(x, y));
-            texture = new NativeImageBackedTexture(() -> "Craftaria wallpaper", image);
+                for (int x = 0; x < decoded.getWidth(); x++) image.setColor(x, y, Integer.reverseBytes(decoded.getRGB(x, y)) >>> 8 | (decoded.getRGB(x, y) & 0xFF000000));
+            texture = new NativeImageBackedTexture(image);
             MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
             return new ImageTexture(id, decoded.getWidth(), decoded.getHeight());
         } catch (RuntimeException e) {
@@ -223,7 +223,7 @@ public final class WallpaperManager {
         int rw = Math.max(1, Math.min(texture.width(), (int)Math.round(width/scale)));
         int rh = Math.max(1, Math.min(texture.height(), (int)Math.round(height/scale)));
         float u = (texture.width()-rw)/2f, v = (texture.height()-rh)/2f;
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, texture.id(), x, y, u, v, width, height,
+        GuiTextures.draw(context, texture.id(), x, y, u, v, width, height,
                 rw, rh, texture.width(), texture.height(), (Math.clamp(alpha, 0, 255)<<24)|0xFFFFFF);
     }
 }

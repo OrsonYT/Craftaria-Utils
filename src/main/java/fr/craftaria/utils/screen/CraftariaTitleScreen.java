@@ -2,7 +2,7 @@ package fr.craftaria.utils.screen;
 
 import fr.craftaria.utils.wallpaper.WallpaperManager;
 
-import net.minecraft.client.gl.RenderPipelines;
+import fr.craftaria.utils.screen.GuiTextures;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -61,6 +61,11 @@ public final class CraftariaTitleScreen extends Screen {
         ConnectScreen.connect(this, client, ServerAddress.parse(SERVER), server, false, null);
     }
 
+    public void retryConnection() {
+        connecting = false;
+        connect();
+    }
+
     public void renderScene(DrawContext context, int width, int height) {
         WallpaperManager.draw(context, width, height);
         for (int x = 0; x < width * .65f; x += 2) {
@@ -69,22 +74,22 @@ public final class CraftariaTitleScreen extends Screen {
         }
         float s = Math.min(width/960f, height/540f);
         int size = Math.round(74*s), left = Math.round(36*s), top = Math.round(26*s);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, LOGO, left, top, 0, 0, size, size, 1254, 1254, 1254, 1254);
+        GuiTextures.draw(context, LOGO, left, top, 0, 0, size, size, 1254, 1254, 1254, 1254);
         serverStatus.render(context, width, height);
         String[] credits = {
                 "Craftaria Utils by OrsonBlockTV",
-                "Minecraft 1.21.11 — Thanks to Fabric for the loader",
+                "Minecraft 1.21.1 — Thanks to Fabric for the loader",
                 "Copyright Mojang AB. Do not distribute!"
         };
         float creditScale = Math.clamp(s, 0.5f, 0.7f);
-        context.getMatrices().pushMatrix();
-        context.getMatrices().scale(creditScale, creditScale);
+        context.getMatrices().push();
+        context.getMatrices().scale(creditScale, creditScale, 1);
         for (int i = 0; i < credits.length; i++) {
             int creditX = (int)((width - 6) / creditScale) - textRenderer.getWidth(credits[i]);
             int creditY = (int)((height - 6) / creditScale) - (credits.length - i) * 10;
             context.drawTextWithShadow(textRenderer, Text.literal(credits[i]), creditX, creditY, 0xFFCDC7BA);
         }
-        context.getMatrices().popMatrix();
+        context.getMatrices().pop();
     }
 
     public void renderConnecting(DrawContext context, int width, int height, Text status) {
@@ -92,6 +97,12 @@ public final class CraftariaTitleScreen extends Screen {
         float s = Math.min(width/960f, height/540f);
         MenuTextButton.drawLabel(context, Text.translatable("craftaria_utils.menu.connecting"), Math.round(64*s), Math.round(185*s), 3.2f*s, false, false);
         context.drawTextWithShadow(textRenderer, status, Math.round(64*s), Math.round(246*s), 0xFFE2D9C4);
+        int x = Math.round(64*s), y = Math.round(269*s), gap = Math.max(6,Math.round(10*s));
+        int frame = (int)(net.minecraft.util.Util.getMeasuringTimeMs()/220 % 3);
+        for (int i=0;i<3;i++) {
+            int size=Math.max(2,Math.round(3*s));
+            context.fill(x+i*gap,y,x+i*gap+size,y+size,i==frame?0xFFFFD383:0xFF756B57);
+        }
     }
 
     @Override public void render(DrawContext context, int mouseX, int mouseY, float delta) {

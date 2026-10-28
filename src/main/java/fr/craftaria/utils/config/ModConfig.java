@@ -43,7 +43,7 @@ public final class ModConfig {
         public int repairThresholdPercent = 50;
         public String wallpaper = "";
         public String password = "";
-        public int cookingDelayTicks = 40;
+        public int cookingDelayTicks = 16;
         public boolean connectionTrackerEnabled = false;
         /** Comma or semicolon separated Minecraft usernames to watch. */
         public String trackedPlayers = "";

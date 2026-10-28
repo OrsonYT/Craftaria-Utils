@@ -1,10 +1,10 @@
 # Craftaria Utils
 
-Mod client Fabric pour Minecraft 1.21.11. Créateur : **OrsonBlockTV**.
+Mod client Fabric pour Minecraft 1.21.1. Créateur : **OrsonBlockTV**.
 
 ## Installation
 
-1. Installe Fabric Loader pour Minecraft 1.21.11 avec Fabric API.
+1. Installe Fabric Loader pour Minecraft 1.21.1 avec Fabric API.
 2. Lance `./gradlew build` (ou `gradlew.bat build` sous Windows).
 3. Copie le dernier JAR de `build/libs` dans le dossier `mods`.
 4. Dans Minecraft, ouvre **Options → Contrôles → Raccourcis divers** pour attribuer les touches `/four`, connexion et cuisson.

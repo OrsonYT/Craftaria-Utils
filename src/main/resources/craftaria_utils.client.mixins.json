@@ -6,6 +6,7 @@
     "GameMenuScreenMixin",
     "MinecraftClientMixin",
     "ConnectScreenMixin",
+    "DisconnectedScreenAccessor",
     "TitleScreenMixin",
     "OptionsScreenMixin",
     "InGameHudMixin",

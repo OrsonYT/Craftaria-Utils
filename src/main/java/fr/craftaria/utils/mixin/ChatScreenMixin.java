@@ -8,13 +8,11 @@ import fr.craftaria.utils.screen.TeleportPlayersScreen;
 import fr.craftaria.utils.screen.QuickHomesScreen;
 import fr.craftaria.utils.config.ModConfig;
 import fr.craftaria.utils.config.QuickHome;
-import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
@@ -94,37 +92,45 @@ public abstract class ChatScreenMixin extends Screen {
             craftariaUtils$generalMenu.close();
             return;
         }
-        if (craftariaUtils$shareMenu != null) {
-            craftariaUtils$shareMenu.layout(width, chatField.getY());
-            craftariaUtils$shareMenu.render(context, mouseX, mouseY);
-        }
-        if (craftariaUtils$teleportMenu != null) {
-            craftariaUtils$teleportMenu.layout(width, chatField.getY());
-            craftariaUtils$teleportMenu.render(context, mouseX, mouseY);
-        }
-        if (craftariaUtils$generalMenu != null) {
-            craftariaUtils$generalMenu.layout(width, chatField.getY());
-            craftariaUtils$generalMenu.render(context, mouseX, mouseY);
+        context.draw();
+        context.getMatrices().push();
+        context.getMatrices().translate(0, 0, 1000);
+        try {
+            if (craftariaUtils$shareMenu != null) {
+                craftariaUtils$shareMenu.layout(width, chatField.getY());
+                craftariaUtils$shareMenu.render(context, mouseX, mouseY);
+            }
+            if (craftariaUtils$teleportMenu != null) {
+                craftariaUtils$teleportMenu.layout(width, chatField.getY());
+                craftariaUtils$teleportMenu.render(context, mouseX, mouseY);
+            }
+            if (craftariaUtils$generalMenu != null) {
+                craftariaUtils$generalMenu.layout(width, chatField.getY());
+                craftariaUtils$generalMenu.render(context, mouseX, mouseY);
+            }
+        } finally {
+            context.draw();
+            context.getMatrices().pop();
         }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void craftariaUtils$clickShareMenu(Click click, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
+    private void craftariaUtils$clickShareMenu(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         // Leave clicks on Minecraft's completion window entirely to the vanilla suggestor.
         if (craftariaUtils$hideButtons()) return;
-        if (craftariaUtils$generalMenu != null && craftariaUtils$generalMenu.mouseClicked(click.x(), click.y(), click.button())) {
+        if (craftariaUtils$generalMenu != null && craftariaUtils$generalMenu.mouseClicked(mouseX, mouseY, button)) {
             if (craftariaUtils$shareMenu != null) craftariaUtils$shareMenu.close();
             if (craftariaUtils$teleportMenu != null) craftariaUtils$teleportMenu.close();
             cir.setReturnValue(true);
             return;
         }
-        if (craftariaUtils$teleportMenu != null && craftariaUtils$teleportMenu.mouseClicked(click.x(), click.y(), click.button())) {
+        if (craftariaUtils$teleportMenu != null && craftariaUtils$teleportMenu.mouseClicked(mouseX, mouseY, button)) {
             if (craftariaUtils$generalMenu != null) craftariaUtils$generalMenu.close();
             if (craftariaUtils$shareMenu != null) craftariaUtils$shareMenu.close();
             cir.setReturnValue(true);
             return;
         }
-        if (craftariaUtils$shareMenu != null && craftariaUtils$shareMenu.mouseClicked(click.x(), click.y(), click.button())) {
+        if (craftariaUtils$shareMenu != null && craftariaUtils$shareMenu.mouseClicked(mouseX, mouseY, button)) {
             if (craftariaUtils$generalMenu != null) craftariaUtils$generalMenu.close();
             if (craftariaUtils$teleportMenu != null) craftariaUtils$teleportMenu.close();
             cir.setReturnValue(true);
@@ -132,11 +138,11 @@ public abstract class ChatScreenMixin extends Screen {
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void craftariaUtils$closeShareMenu(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
+    private void craftariaUtils$closeShareMenu(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         boolean menuOpen = (craftariaUtils$shareMenu != null && craftariaUtils$shareMenu.isOpen())
                 || (craftariaUtils$teleportMenu != null && craftariaUtils$teleportMenu.isOpen())
                 || (craftariaUtils$generalMenu != null && craftariaUtils$generalMenu.isOpen());
-        if (menuOpen && input.key()==GLFW.GLFW_KEY_ESCAPE) {
+        if (menuOpen && keyCode==GLFW.GLFW_KEY_ESCAPE) {
             if (craftariaUtils$shareMenu != null) craftariaUtils$shareMenu.close();
             if (craftariaUtils$teleportMenu != null) craftariaUtils$teleportMenu.close();
             if (craftariaUtils$generalMenu != null) craftariaUtils$generalMenu.close();
