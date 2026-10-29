@@ -24,6 +24,8 @@ public final class ModConfig {
         data.repairThresholdPercent = Math.clamp(data.repairThresholdPercent, 1, 100);
         if (data.wallpaper == null) data.wallpaper = "";
         if (data.trackedPlayers == null) data.trackedPlayers = "";
+        if (data.protectedItems == null) data.protectedItems = new ArrayList<>();
+        data.protectedItems.removeIf(id -> id == null || id.isBlank());
         var homes = new LinkedHashMap<String, QuickHome>();
         if (data.quickHomes != null) for (QuickHome home : data.quickHomes) {
             if (home != null && QuickHome.validName(home.name)) {
@@ -45,8 +47,13 @@ public final class ModConfig {
         public String password = "";
         public int cookingDelayTicks = 16;
         public boolean connectionTrackerEnabled = false;
+        public boolean trackerNotifyJoin = true;
+        public boolean trackerNotifyLeave = true;
+        public boolean trackerNotifyAlreadyOnline = true;
         /** Comma or semicolon separated Minecraft usernames to watch. */
         public String trackedPlayers = "";
+        public boolean antiDropEnabled = true;
+        public List<String> protectedItems = new ArrayList<>();
         public List<QuickHome> quickHomes = new ArrayList<>();
     }
 }

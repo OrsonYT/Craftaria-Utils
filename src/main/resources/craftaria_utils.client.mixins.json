@@ -12,7 +12,11 @@
     "InGameHudMixin",
     "LoadingBackgroundMixin",
     "SplashOverlayMixin",
-    "ChatScreenMixin"
+    "ChatScreenMixin",
+    "AntiDropInteractionMixin",
+    "AntiDropPlayerMixin",
+    "AntiDropAlertMixin",
+    "AntiDropHandledScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

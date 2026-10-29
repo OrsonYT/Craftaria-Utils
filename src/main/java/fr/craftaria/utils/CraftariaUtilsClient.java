@@ -24,7 +24,6 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
 
     @Override public void onInitializeClient() {
         ModConfig.load();
-        ConnectionTracker.initialize();
         WallpaperManager.initializeDirectory();
         fourKey = register("key.craftaria_utils.four");
         loginKey = register("key.craftaria_utils.login");
@@ -36,6 +35,7 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
                 else client.inGameHud.getChatHud().addMessage(Text.translatable("craftaria_utils.login.no_password"));
             }
             while (cookingKey.wasPressed()) client.setScreen(new CookingScreen(client.currentScreen));
+            ConnectionTracker.tick(client);
             CookingQueue.tick(client);
             checkRepair(client);
         });

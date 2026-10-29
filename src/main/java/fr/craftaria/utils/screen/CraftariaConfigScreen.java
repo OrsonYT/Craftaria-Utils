@@ -18,7 +18,7 @@ import org.lwjgl.glfw.GLFW;
 
 public final class CraftariaConfigScreen extends CraftariaScreen {
     private static final Identifier LOGO = Identifier.of("craftaria_utils", "icon-transparent.png");
-    private enum Page { REPAIR, LOGIN, COOKING, KEYS, TRACKER }
+    private enum Page { REPAIR, LOGIN, COOKING, KEYS, TRACKER, ANTIDROP }
     private final Screen parent;
     private Page page = Page.REPAIR;
     private KeyBinding capturing;
@@ -27,6 +27,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
     private SettingsButton addTrackedPlayerButton;
     private String trackedPlayerDraft="";
     private int trackedListY,trackedPage,trackedPageSize=1;
+    private int antiDropPage,antiDropPageCount=1;
     private int left, top, contentX, contentWidth, bodyY;
 
     public CraftariaConfigScreen(Screen parent) { super(Text.translatable("craftaria_utils.title")); this.parent = parent; }
@@ -100,13 +101,46 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                 addBindingRow(CraftariaUtilsClient.loginKey, "craftaria_utils.settings.login_key", y+29);
                 addBindingRow(CraftariaUtilsClient.cookingKey, "craftaria_utils.settings.cooking_key", y+58);
             }
+            case ANTIDROP -> {
+                addDrawableChild(new SettingsButton(contentX,y,contentWidth,
+                        ()->Text.translatable("craftaria_utils.antidrop.toggle",Text.translatable(ModConfig.get().antiDropEnabled?"options.on":"options.off")),()->{
+                    ModConfig.get().antiDropEnabled=!ModConfig.get().antiDropEnabled; ModConfig.save();
+                }));
+                var select=addDrawableChild(new SettingsButton(contentX,y+36,contentWidth,
+                        ()->Text.translatable("craftaria_utils.antidrop.select"),()->client.setScreen(new AntiDropScreen(this))));
+                select.active=client.player!=null;
+                var protectedItems=ModConfig.get().protectedItems;
+                int columns=Math.max(1,contentWidth/28);
+                int rows=Math.max(1,(height-54-(y+100))/28);
+                int pageSize=columns*rows;
+                antiDropPageCount=Math.max(1,(protectedItems.size()+pageSize-1)/pageSize);
+                antiDropPage=Math.clamp(antiDropPage,0,antiDropPageCount-1);
+                for(int i=0;i<pageSize && antiDropPage*pageSize+i<protectedItems.size();i++) {
+                    String id=protectedItems.get(antiDropPage*pageSize+i);
+                    var item=fr.craftaria.utils.config.QuickHome.iconStack(id);
+                    addDrawableChild(new ItemIconButton(contentX+(i%columns)*28,y+100+(i/columns)*28,item,true,
+                            item.getName().copy().append("\n").append(Text.translatable("craftaria_utils.antidrop.remove_hint")),()->{
+                        ModConfig.get().protectedItems.remove(id); ModConfig.save(); clearAndInit();
+                    }));
+                }
+                if(antiDropPageCount>1) {
+                    var prev=addDrawableChild(new SettingsButton(contentX+contentWidth-80,y+70,32,()->Text.literal("<"),()->{antiDropPage--;clearAndInit();}));
+                    var next=addDrawableChild(new SettingsButton(contentX+contentWidth-36,y+70,32,()->Text.literal(">"),()->{antiDropPage++;clearAndInit();}));
+                    prev.active=antiDropPage>0; next.active=antiDropPage+1<antiDropPageCount;
+                }
+            }
             case TRACKER -> {
-                addDrawableChild(new SettingsButton(contentX, y, contentWidth,
+                addDrawableChild(new SettingsButton(contentX, y, contentWidth-122,
                         () -> Text.translatable("craftaria_utils.tracker.toggle",
                                 Text.translatable(ModConfig.get().connectionTrackerEnabled ? "options.on" : "options.off")), () -> {
                     ModConfig.get().connectionTrackerEnabled = !ModConfig.get().connectionTrackerEnabled;
                     ModConfig.save();
                 }));
+                var test=addDrawableChild(new SettingsButton(contentX+contentWidth-118,y,54,
+                        ()->Text.translatable("craftaria_utils.tracker.test"),()->fr.craftaria.utils.ConnectionTracker.preview(client)));
+                test.active=client.player!=null;
+                addDrawableChild(new SettingsButton(contentX+contentWidth-60,y,60,()->Text.translatable("craftaria_utils.tracker.alerts_short"),
+                        ()->client.setScreen(new TrackerAlertSettingsScreen(this))));
                 trackedPlayerField = new TextFieldWidget(textRenderer, contentX+1, y+48, contentWidth-94, 22,
                         Text.translatable("craftaria_utils.tracker.player_name"));
                 trackedPlayerField.setPlaceholder(Text.translatable("craftaria_utils.tracker.player_hint"));
@@ -127,7 +161,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                     TrackedPlayerSkins.request(name);
                     int rowY=trackedListY+i*29;
                     addDrawableChild(new SettingsButton(contentX+28,rowY,contentWidth-84,
-                            () -> Text.literal(name),() -> { trackedPlayerDraft=name; trackedPageFieldSync(); }));
+                            () -> Text.literal(name+" · ").append(Text.translatable(fr.craftaria.utils.ConnectionTracker.isOnline(client,name)?"craftaria_utils.tracker.online":"craftaria_utils.tracker.offline")),() -> { trackedPlayerDraft=name; trackedPageFieldSync(); }));
                     addDrawableChild(new SettingsButton(contentX+contentWidth-52,rowY,52,
                             () -> Text.translatable("craftaria_utils.tracker.remove"),() -> removeTrackedPlayer(name)));
                 }
@@ -216,6 +250,11 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
             bindingLabel(context, "craftaria_utils.settings.cooking_key", y+58);
         } else if (page==Page.REPAIR) {
             context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
+        } else if (page==Page.ANTIDROP) {
+            String label=Text.translatable("craftaria_utils.antidrop.list",ModConfig.get().protectedItems.size()).getString();
+            context.drawTextWithShadow(textRenderer,textRenderer.trimToWidth(label,contentWidth-(antiDropPageCount>1?90:0)),contentX,y+78,0xFFFFD383);
+            if(ModConfig.get().protectedItems.isEmpty()) context.drawTextWrapped(textRenderer,
+                    Text.translatable("craftaria_utils.antidrop.empty"),contentX,y+108,contentWidth,0xFFB8B4AA);
         } else if (page==Page.TRACKER) {
             context.drawTextWithShadow(textRenderer, Text.translatable("craftaria_utils.tracker.player_name"), contentX, y+34, 0xFFF0E9DA);
             context.fill(contentX, y+47, contentX+contentWidth, y+71, 0x50101720);
@@ -244,8 +283,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
 
     private static boolean validPlayerName(String name) { return name!=null && name.matches("[A-Za-z0-9_]{3,16}"); }
     private static java.util.List<String> parseTrackedPlayers() {
-        return java.util.Arrays.stream(ModConfig.get().trackedPlayers.split("[,;\\n]")).map(String::strip)
-                .filter(CraftariaConfigScreen::validPlayerName).distinct().toList();
+        return fr.craftaria.utils.TrackedPlayers.parse(ModConfig.get().trackedPlayers);
     }
     private void confirmTrackedPlayer() {
         String name=trackedPlayerDraft.strip();
@@ -254,7 +292,8 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
     }
     private void addTrackedPlayer(String name) {
         var players=new java.util.ArrayList<>(parseTrackedPlayers()); players.add(name);
-        ModConfig.get().trackedPlayers=String.join(", ",players); ModConfig.save();
+        ModConfig.get().trackedPlayers=String.join(", ",players);
+        ModConfig.get().connectionTrackerEnabled=true; ModConfig.save();
         trackedPlayerDraft=""; trackedPage=Math.max(0,(players.size()-1)/trackedPageSize);
     }
     private void removeTrackedPlayer(String name) {

@@ -35,8 +35,7 @@ public abstract class ChatScreenMixin extends Screen {
     protected ChatScreenMixin(Text title) { super(title); }
 
     @Unique private boolean craftariaUtils$hideButtons() {
-        return (chatInputSuggestor != null && chatInputSuggestor.isOpen())
-                || (chatField != null && !chatField.getText().isBlank());
+        return chatInputSuggestor != null && chatInputSuggestor.isOpen();
     }
 
     @Inject(method = "init", at = @At("TAIL"))

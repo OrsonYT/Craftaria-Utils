@@ -47,6 +47,19 @@ Un bouton avec un livre apparaît au-dessus de la saisie du chat. Il ouvre les r
 
 Le bouton **Téléportation**, à côté du partage dans le chat, propose `/tpa`, `/tpahere`, `/rtp`, `/warp`, `/home`, `/spawn`, `/casino` et `/crate`. Les demandes vers un joueur passent par une liste avec têtes, recherche par pseudo et pages ; la liste se rafraîchit pendant son ouverture. Le brouillon du chat est conservé en revenant de la liste. Les autres actions exécutent directement leur commande.
 
-Le bouton **Général** du chat regroupe les commandes utiles, avec `/shop` pour le shop entre joueurs, les quêtes, compétences, collections, enderchest, kits, statistiques et liens du serveur. La molette fait défiler les menus de commandes.
+Le bouton **Général** du chat regroupe les commandes utiles, avec `/shop` pour le shop entre joueurs, les quêtes, compétences, collections, enderchest, kits, statistiques du serveur. La molette fait défiler les menus de commandes.
 
 **Téléportation → Ajouter une téléportation rapide** ouvre la même page que **Réglages → Homes rapides**. Indique le nom d’un home déjà créé sur le serveur, choisis un item comme icône puis ajoute le raccourci. Il est sauvegardé localement et apparaît dans le menu Téléportation pour lancer `/home <nom>`. Cette page permet aussi de modifier ou retirer les raccourcis ; elle ne crée ni ne supprime les homes du serveur.
+
+
+### Tracker de connexions
+Dans les paramètres, active le tracker et ajoute les pseudos à suivre. Il compare les UUID présents dans la liste du Tab et affiche les nouvelles arrivées avec une tête et un son. Les joueurs déjà présents à ta connexion ne déclenchent pas d’alerte. Le serveur doit rendre ces joueurs visibles dans sa liste.
+
+### Anti-drop
+Dans **Anti-drop → Sélectionner les objets protégés**, clique sur les objets pour les sélectionner en vert, puis valide avec **Protéger**. Les objets apparaissent ensuite sous forme d’icônes dans les paramètres ; un clic sur une icône retire sa protection. Tous les exemplaires de ces types sont protégés et la sélection reste sauvegardée. Les jets au clavier, les jets hors de l’inventaire et les transferts vers un coffre sont bloqués côté client avec une alerte temporaire et un son. Repose un objet protégé tenu par le curseur avant de fermer l’inventaire.
+
+Les boutons du chat restent visibles pendant la saisie et se masquent seulement lorsque la fenêtre native de complétion est ouverte.
+
+Le tracker affiche le statut En ligne / Hors ligne des pseudos suivis. Le bouton Tester prévisualise la notification et le son en jeu ; ajouter un joueur active automatiquement le suivi.
+
+Dans **Tracker → Alertes**, les connexions, déconnexions et présences à ton arrivée sont activables séparément. Les présences initiales ne sont affichées qu’une fois le monde prêt et l’écran d’application des ressources fermé.
