@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -26,6 +27,7 @@ public final class ModConfig {
         if (data.trackedPlayers == null) data.trackedPlayers = "";
         if (data.protectedItems == null) data.protectedItems = new ArrayList<>();
         data.protectedItems.removeIf(id -> id == null || id.isBlank());
+        if (data.protectedStackCounts == null) data.protectedStackCounts = new java.util.HashMap<>();
         var homes = new LinkedHashMap<String, QuickHome>();
         if (data.quickHomes != null) for (QuickHome home : data.quickHomes) {
             if (home != null && QuickHome.validName(home.name)) {
@@ -54,6 +56,8 @@ public final class ModConfig {
         public String trackedPlayers = "";
         public boolean antiDropEnabled = true;
         public List<String> protectedItems = new ArrayList<>();
+        /** Number of protected units from each selected stack, keyed by its full component fingerprint. */
+        public java.util.Map<String, Integer> protectedStackCounts = new HashMap<>();
         public List<QuickHome> quickHomes = new ArrayList<>();
     }
 }

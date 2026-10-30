@@ -13,11 +13,12 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import fr.craftaria.utils.protection.ProtectedStacks;
 
-/** Only edits the protection list; selecting never sends an inventory click. */
+/** Selects individual inventory stacks; selection never sends an inventory click. */
 public final class AntiDropScreen extends HandledScreen<PlayerScreenHandler> {
     private final Screen parent;
-    private final java.util.Set<String> selected=new java.util.LinkedHashSet<>(ModConfig.get().protectedItems);
+    private final java.util.Set<String> selected=new java.util.LinkedHashSet<>(ModConfig.get().protectedStackCounts.keySet());
     private ButtonWidget protectButton;
     public AntiDropScreen(Screen parent) {
         super(MinecraftClient.getInstance().player.playerScreenHandler,MinecraftClient.getInstance().player.getInventory(),
@@ -27,6 +28,12 @@ public final class AntiDropScreen extends HandledScreen<PlayerScreenHandler> {
     @Override protected void init() {
         super.init();
         protectButton=addDrawableChild(ButtonWidget.builder(selectionLabel(),b->{
+            // Explicit confirmation replaces unresolved snapshots with the visible selection.
+            selected.removeIf(key->findCount(key)==0);
+            ModConfig.get().protectedStackCounts.clear();
+            for(String key:selected) {
+                ModConfig.get().protectedStackCounts.putIfAbsent(key,findCount(key));
+            }
             ModConfig.get().protectedItems=new java.util.ArrayList<>(selected);
             ModConfig.get().antiDropEnabled=true;
             ModConfig.save(); close();
@@ -39,7 +46,7 @@ public final class AntiDropScreen extends HandledScreen<PlayerScreenHandler> {
     @Override public boolean mouseClicked(double mouseX,double mouseY,int button) {
         for(Slot slot:handler.slots) if(mouseX>=x+slot.x && mouseX<x+slot.x+16 && mouseY>=y+slot.y && mouseY<y+slot.y+16) {
             if(button==0 && slot.inventory==client.player.getInventory() && slot.hasStack()) {
-                String id=Registries.ITEM.getId(slot.getStack().getItem()).toString();
+                String id=ProtectedStacks.fingerprint(slot.getStack(),client.world.getRegistryManager());
                 if(!selected.remove(id)) selected.add(id);
                 protectButton.setMessage(selectionLabel());
             }
@@ -51,7 +58,7 @@ public final class AntiDropScreen extends HandledScreen<PlayerScreenHandler> {
     @Override protected void drawSlot(DrawContext context,Slot slot) {
         super.drawSlot(context,slot);
         if(slot.hasStack() && slot.inventory==client.player.getInventory()
-                && selected.contains(Registries.ITEM.getId(slot.getStack().getItem()).toString()))
+                && selected.contains(ProtectedStacks.fingerprint(slot.getStack(),client.world.getRegistryManager())))
             context.fill(slot.x,slot.y,slot.x+16,slot.y+16,0x8033DD55);
     }
     @Override protected void drawBackground(DrawContext context,float delta,int mouseX,int mouseY) {
@@ -61,9 +68,16 @@ public final class AntiDropScreen extends HandledScreen<PlayerScreenHandler> {
     @Override public void render(DrawContext context,int mouseX,int mouseY,float delta) {
         super.render(context,mouseX,mouseY,delta);
         context.drawCenteredTextWithShadow(textRenderer,Text.translatable("craftaria_utils.antidrop.select_hint"),width/2,y-23,0xFFF0E9DA);
-        context.drawCenteredTextWithShadow(textRenderer,Text.translatable("craftaria_utils.antidrop.all_of_type"),width/2,y-11,0xFFFFD383);
+        context.drawCenteredTextWithShadow(textRenderer,Text.translatable("craftaria_utils.antidrop.individual"),width/2,y-11,0xFFFFD383);
         drawMouseoverTooltip(context,mouseX,mouseY);
     }
     @Override protected void applyBlur(float delta) { }
     @Override public void close() { client.setScreen(parent); }
+
+    private int findCount(String fingerprint) {
+        for(Slot slot:handler.slots) if(slot.inventory==client.player.getInventory() && slot.hasStack()
+                && fingerprint.equals(ProtectedStacks.fingerprint(slot.getStack(),client.world.getRegistryManager())))
+            return slot.getStack().getCount();
+        return 0;
+    }
 }

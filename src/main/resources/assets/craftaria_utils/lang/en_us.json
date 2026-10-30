@@ -195,5 +195,9 @@
   "craftaria_utils.tracker.notify_initial": "Already online when you join: %s",
   "craftaria_utils.tracker.left": "left the server",
   "craftaria_utils.tracker.already_online": "is already online",
-  "craftaria_utils.tracker.alerts_short": "Alerts"
+  "craftaria_utils.tracker.alerts_short": "Alerts",
+  "craftaria_utils.antidrop.reselect_title": "Anti-drop: verify selection",
+  "craftaria_utils.antidrop.reselect_description": "A protected item is missing or ambiguous. Reselect your items. Drops and transfers are blocked until resolved. Confirming replaces old references with the visible selection.",
+  "craftaria_utils.antidrop.reselect_blocked": "Anti-drop: verify your protected item selection.",
+  "craftaria_utils.antidrop.individual": "Identical copies require verification."
 }

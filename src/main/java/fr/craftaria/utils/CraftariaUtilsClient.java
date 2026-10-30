@@ -37,6 +37,7 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
             while (cookingKey.wasPressed()) client.setScreen(new CookingScreen(client.currentScreen));
             ConnectionTracker.tick(client);
             CookingQueue.tick(client);
+            fr.craftaria.utils.protection.AntiDrop.reconcileInventory();
             checkRepair(client);
         });
     }

@@ -109,18 +109,18 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                 var select=addDrawableChild(new SettingsButton(contentX,y+36,contentWidth,
                         ()->Text.translatable("craftaria_utils.antidrop.select"),()->client.setScreen(new AntiDropScreen(this))));
                 select.active=client.player!=null;
-                var protectedItems=ModConfig.get().protectedItems;
+                var protectedItems=new java.util.ArrayList<>(ModConfig.get().protectedStackCounts.keySet());
                 int columns=Math.max(1,contentWidth/28);
                 int rows=Math.max(1,(height-54-(y+100))/28);
                 int pageSize=columns*rows;
                 antiDropPageCount=Math.max(1,(protectedItems.size()+pageSize-1)/pageSize);
                 antiDropPage=Math.clamp(antiDropPage,0,antiDropPageCount-1);
                 for(int i=0;i<pageSize && antiDropPage*pageSize+i<protectedItems.size();i++) {
-                    String id=protectedItems.get(antiDropPage*pageSize+i);
-                    var item=fr.craftaria.utils.config.QuickHome.iconStack(id);
+                    String key=protectedItems.get(antiDropPage*pageSize+i);
+                    var item=fr.craftaria.utils.protection.ProtectedStacks.previewStack(key);
                     addDrawableChild(new ItemIconButton(contentX+(i%columns)*28,y+100+(i/columns)*28,item,true,
                             item.getName().copy().append("\n").append(Text.translatable("craftaria_utils.antidrop.remove_hint")),()->{
-                        ModConfig.get().protectedItems.remove(id); ModConfig.save(); clearAndInit();
+                        fr.craftaria.utils.protection.ProtectedStacks.removeKey(key); ModConfig.save(); clearAndInit();
                     }));
                 }
                 if(antiDropPageCount>1) {
@@ -251,9 +251,9 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
         } else if (page==Page.REPAIR) {
             context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
         } else if (page==Page.ANTIDROP) {
-            String label=Text.translatable("craftaria_utils.antidrop.list",ModConfig.get().protectedItems.size()).getString();
+            String label=Text.translatable("craftaria_utils.antidrop.list",ModConfig.get().protectedStackCounts.size()).getString();
             context.drawTextWithShadow(textRenderer,textRenderer.trimToWidth(label,contentWidth-(antiDropPageCount>1?90:0)),contentX,y+78,0xFFFFD383);
-            if(ModConfig.get().protectedItems.isEmpty()) context.drawTextWrapped(textRenderer,
+            if(ModConfig.get().protectedStackCounts.isEmpty()) context.drawTextWrapped(textRenderer,
                     Text.translatable("craftaria_utils.antidrop.empty"),contentX,y+108,contentWidth,0xFFB8B4AA);
         } else if (page==Page.TRACKER) {
             context.drawTextWithShadow(textRenderer, Text.translatable("craftaria_utils.tracker.player_name"), contentX, y+34, 0xFFF0E9DA);

@@ -175,8 +175,9 @@
   "craftaria_utils.settings.antidrop.description": "Protège les objets sélectionnés contre le jet et les transferts hors de ton inventaire.",
   "craftaria_utils.antidrop.toggle": "Anti-drop : %s",
   "craftaria_utils.antidrop.select": "Sélectionner les objets protégés",
-  "craftaria_utils.antidrop.select_hint": "Clique sur les objets : vert = sélectionné. Puis valide.",
+  "craftaria_utils.antidrop.select_hint": "Clique sur les piles à protéger : vert = sélectionné. Puis valide.",
   "craftaria_utils.antidrop.all_of_type": "Tous les objets du même type sont protégés.",
+  "craftaria_utils.antidrop.individual": "Les exemplaires identiques nécessitent une vérification.",
   "craftaria_utils.antidrop.clear": "Tout retirer",
   "craftaria_utils.antidrop.blocked": "Impossible de retirer cet objet protégé.",
   "craftaria_utils.antidrop.place_first": "Repose cet objet protégé dans ton inventaire avant de fermer.",
@@ -195,5 +196,8 @@
   "craftaria_utils.tracker.notify_initial": "Déjà connecté à ton arrivée : %s",
   "craftaria_utils.tracker.left": "s’est déconnecté",
   "craftaria_utils.tracker.already_online": "est déjà connecté",
-  "craftaria_utils.tracker.alerts_short": "Alertes"
+  "craftaria_utils.tracker.alerts_short": "Alertes",
+  "craftaria_utils.antidrop.reselect_title": "Anti-drop : sélection à vérifier",
+  "craftaria_utils.antidrop.reselect_description": "Un objet protégé est introuvable ou plusieurs exemplaires sont identiques. Resélectionne tes objets pour confirmer la protection. Les jets et transferts sont bloqués par précaution jusque-là. Valider remplacera les anciennes références par ta sélection visible.",
+  "craftaria_utils.antidrop.reselect_blocked": "Anti-drop : vérifie la sélection des objets protégés."
 }

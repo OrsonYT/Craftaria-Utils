@@ -6,7 +6,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.sound.SoundEvents;
@@ -16,11 +15,31 @@ import net.minecraft.text.Text;
 public final class AntiDrop {
     private static long until, lastSound;
     private static Text message;
+    private static Object session;
+    private static int readyTicks;
+    private static boolean warned;
+    private static boolean uncertain;
+
+    private static java.util.List<ItemStack> inventory() {
+        var player = MinecraftClient.getInstance().player;
+        var stacks = new java.util.ArrayList<ItemStack>();
+        if (player != null) {
+            for (int i=0; i<player.getInventory().size(); i++) stacks.add(player.getInventory().getStack(i));
+            stacks.add(player.currentScreenHandler.getCursorStack());
+        }
+        return stacks;
+    }
+
+    private static boolean uncertainNow() {
+        var client = MinecraftClient.getInstance();
+        return client.world != null && ProtectedStacks.needsReselection(inventory(), client.world.getRegistryManager());
+    }
     private AntiDrop() { }
 
     public static boolean isProtected(ItemStack stack) {
-        return ModConfig.get().antiDropEnabled && !stack.isEmpty()
-                && ModConfig.get().protectedItems.contains(Registries.ITEM.getId(stack.getItem()).toString());
+        var client = MinecraftClient.getInstance();
+        return ModConfig.get().antiDropEnabled && client.world != null && client.world.getRegistryManager() != null
+                && !stack.isEmpty() && (uncertainNow() || ProtectedStacks.isProtected(stack, client.world.getRegistryManager()));
     }
 
     public static boolean blocksClick(PlayerEntity player,int slotId,int button,SlotActionType action) {
@@ -39,7 +58,7 @@ public final class AntiDrop {
 
     public static void alert(boolean cursorMustBePlaced) {
         long now=System.currentTimeMillis();
-        message=Text.translatable(cursorMustBePlaced?"craftaria_utils.antidrop.place_first":"craftaria_utils.antidrop.blocked");
+        message=Text.translatable(uncertainNow()?"craftaria_utils.antidrop.reselect_blocked":cursorMustBePlaced?"craftaria_utils.antidrop.place_first":"craftaria_utils.antidrop.blocked");
         until=now+3000;
         if(now-lastSound>650) {
             MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_ANVIL_PLACE,1.4f,1f));
@@ -58,5 +77,28 @@ public final class AntiDrop {
         c.fill(x,y,x+width,y+2,0xFFFF7777);
         c.drawCenteredTextWithShadow(client.textRenderer,client.textRenderer.trimToWidth(message.getString(),width-16),x+width/2,y+11,0xFFFFC9C9);
         c.draw(); c.getMatrices().pop();
+    }
+
+    public static void reconcileInventory() {
+        var client = MinecraftClient.getInstance();
+        if (client.player == null || client.world == null) {
+            session=null; readyTicks=0; warned=false; return;
+        }
+        if (session != client.getNetworkHandler()) {
+            session=client.getNetworkHandler(); readyTicks=0; warned=false;
+            ProtectedStacks.migrate(client.world.getRegistryManager());
+        }
+        if (!ModConfig.get().antiDropEnabled || client.currentScreen != null || client.getOverlay() != null) return;
+        if (++readyTicks < 60) return;
+        uncertain=uncertainNow();
+        if (!uncertain) { warned=false; return; }
+        if (warned) return;
+        warned=true;
+        client.setScreen(new net.minecraft.client.gui.screen.ConfirmScreen(accepted -> {
+            if (accepted) client.setScreen(new fr.craftaria.utils.screen.AntiDropScreen(null));
+            else client.setScreen(null);
+        }, Text.translatable("craftaria_utils.antidrop.reselect_title"),
+                Text.translatable("craftaria_utils.antidrop.reselect_description"),
+                Text.translatable("craftaria_utils.antidrop.select"), Text.translatable("gui.back")));
     }
 }
