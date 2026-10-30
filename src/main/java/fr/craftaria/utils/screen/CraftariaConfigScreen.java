@@ -46,7 +46,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
         bodyY = top+44;
 
         Page[] pages = Page.values();
-        int sidebarSpacing = Math.min(27, Math.max(16, (height-43-(bodyY+8)-22)/(pages.length+2)));
+        int sidebarSpacing = Math.min(27, Math.max(16, (height-43-(bodyY+8)-22)/(pages.length+3)));
         for (int i=0; i<pages.length; i++) {
             Page tab = pages[i];
             addDrawableChild(new MenuTextButton(left+8, bodyY+8+i*sidebarSpacing, sidebarWidth-10, 22,
@@ -59,6 +59,10 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
         addDrawableChild(new MenuTextButton(left+8, bodyY+8+(pages.length+1)*sidebarSpacing, sidebarWidth-10, 22,
                 Text.translatable("craftaria_utils.quick_homes.tab"), 1f, () -> {
             savePassword(); client.setScreen(new QuickHomesScreen(this));
+        }));
+        addDrawableChild(new MenuTextButton(left+8, bodyY+8+(pages.length+2)*sidebarSpacing, sidebarWidth-10, 22,
+                Text.translatable("craftaria_utils.custom_commands.button"), 1f, () -> {
+            savePassword(); client.setScreen(new CustomCommandsScreen(this));
         }));
         addDrawableChild(new MenuTextButton(left+8, height-27, 100, 20, Text.translatable("gui.back"), 1f, this::close));
         addDrawableChild(new MenuTextButton(width-115, height-27, 104, 20,
@@ -100,6 +104,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                 addBindingRow(CraftariaUtilsClient.fourKey, "craftaria_utils.settings.four_key", y);
                 addBindingRow(CraftariaUtilsClient.loginKey, "craftaria_utils.settings.login_key", y+29);
                 addBindingRow(CraftariaUtilsClient.cookingKey, "craftaria_utils.settings.cooking_key", y+58);
+                addBindingRow(CraftariaUtilsClient.flyKey, "craftaria_utils.settings.fly_key", y+87);
             }
             case ANTIDROP -> {
                 addDrawableChild(new SettingsButton(contentX,y,contentWidth,
@@ -248,6 +253,7 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
             bindingLabel(context, "craftaria_utils.settings.four_key", y);
             bindingLabel(context, "craftaria_utils.settings.login_key", y+29);
             bindingLabel(context, "craftaria_utils.settings.cooking_key", y+58);
+            bindingLabel(context, "craftaria_utils.settings.fly_key", y+87);
         } else if (page==Page.REPAIR) {
             context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
         } else if (page==Page.ANTIDROP) {

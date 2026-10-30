@@ -19,7 +19,8 @@ public class ChatActionMenu {
         }
     }
     private static final int ROW_HEIGHT=22;
-    private final int buttonX,buttonWidth;
+    private final int buttonX,preferredButtonWidth;
+    private int buttonWidth;
     private final Text title;
     private final Item buttonIcon;
     private final Supplier<List<Action>> source;
@@ -28,11 +29,12 @@ public class ChatActionMenu {
     private List<Action> entries=List.of();
     private boolean open;
     public ChatActionMenu(int x,int width,Text title,Item icon,Supplier<List<Action>> source,Consumer<String> action) {
-        buttonX=x; buttonWidth=width; this.title=title; buttonIcon=icon; this.source=source; this.action=action;
+        buttonX=x; preferredButtonWidth=width; buttonWidth=width; this.title=title; buttonIcon=icon; this.source=source; this.action=action;
     }
     public boolean isOpen() { return open; }
     public void close() { open=false; }
     public void layout(int screenWidth,int fieldY) {
+        buttonWidth=Math.max(24,Math.min(preferredButtonWidth,screenWidth-buttonX-4));
         entries=source.get();
         buttonY=Math.max(4,fieldY-26);
         popupWidth=Math.min(296,screenWidth-8);

@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class CraftariaUtilsClient implements ClientModInitializer {
-    public static KeyBinding fourKey, loginKey, cookingKey;
+    public static KeyBinding fourKey, loginKey, cookingKey, flyKey;
     private static int previousDamage = -1;
     private static String previousItem = "";
     private static boolean repairSent;
@@ -28,7 +28,9 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
         fourKey = register("key.craftaria_utils.four");
         loginKey = register("key.craftaria_utils.login");
         cookingKey = register("key.craftaria_utils.cooking");
+        flyKey = register("key.craftaria_utils.fly");
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (flyKey.wasPressed()) sendCommand(client, "fly");
             while (fourKey.wasPressed()) sendCommand(client, "four");
             while (loginKey.wasPressed()) {
                 if (!ModConfig.get().password.isBlank()) client.setScreen(new LoginConfirmScreen(client.currentScreen));
