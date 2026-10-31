@@ -6,7 +6,18 @@
     "GameMenuScreenMixin",
     "MinecraftClientMixin",
     "ConnectScreenMixin",
-    "TitleScreenMixin"
+    "DisconnectedScreenAccessor",
+    "TitleScreenMixin",
+    "OptionsScreenMixin",
+    "InGameHudMixin",
+    "LoadingBackgroundMixin",
+    "SplashOverlayMixin",
+    "ChatScreenMixin",
+    "AntiDropInteractionMixin",
+    "AntiDropPlayerMixin",
+    "AntiDropAlertMixin",
+    "AntiDropHandledScreenMixin",
+    "ResourcePackArrivalMixin"
   ],
   "injectors": {
     "defaultRequire": 1

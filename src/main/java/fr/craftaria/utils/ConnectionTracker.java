@@ -38,7 +38,7 @@ public final class ConnectionTracker {
                 .collect(Collectors.toMap(entry -> entry.getProfile().getId(),entry -> entry.getProfile().getName(),(a,b)->a));
         Set<String> tracked = TrackedPlayers.parse(ModConfig.get().trackedPlayers).stream()
                 .map(name -> name.toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
-        boolean ready=client.currentScreen==null && client.getOverlay()==null && client.world!=null;
+        boolean ready=ServerArrival.isReady() && client.currentScreen==null && client.getOverlay()==null && client.world!=null;
         for(var notice:roster.update(network,current,tracked,ModConfig.get().connectionTrackerEnabled,
                 ModConfig.get().trackerNotifyAlreadyOnline,ready)) {
             if(enabled(notice.kind()) && pending.size()<100) pending.addLast(notice);

@@ -37,6 +37,7 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
                 else client.inGameHud.getChatHud().addMessage(Text.translatable("craftaria_utils.login.no_password"));
             }
             while (cookingKey.wasPressed()) client.setScreen(new CookingScreen(client.currentScreen));
+            ServerArrival.tick(client);
             ConnectionTracker.tick(client);
             CookingQueue.tick(client);
             fr.craftaria.utils.protection.AntiDrop.reconcileInventory();
@@ -47,7 +48,12 @@ public final class CraftariaUtilsClient implements ClientModInitializer {
         return KeyBindingHelper.registerKeyBinding(new KeyBinding(translationKey, InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "key.categories.craftaria_utils"));
     }
     public static void sendCommand(MinecraftClient client, String command) {
-        if (client.player != null && client.getNetworkHandler() != null) client.getNetworkHandler().sendChatCommand(command);
+        if (client.player == null || client.getNetworkHandler() == null) return;
+        if (command.strip().equalsIgnoreCase("fly") && ModConfig.get().flyOnlyOnGround && !client.player.isOnGround()) {
+            client.inGameHud.setOverlayMessage(Text.translatable("craftaria_utils.fly.ground_required"), false);
+            return;
+        }
+        client.getNetworkHandler().sendChatCommand(command);
     }
     private static void checkRepair(MinecraftClient client) {
         if (!ModConfig.get().autoRepair || client.player == null || client.getNetworkHandler() == null) return;

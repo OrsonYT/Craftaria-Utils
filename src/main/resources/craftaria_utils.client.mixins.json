@@ -16,7 +16,8 @@
     "AntiDropInteractionMixin",
     "AntiDropPlayerMixin",
     "AntiDropAlertMixin",
-    "AntiDropHandledScreenMixin"
+    "AntiDropHandledScreenMixin",
+    "ResourcePackArrivalMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -222,7 +222,10 @@
   "craftaria_utils.custom_commands.saved": "Command saved.",
   "craftaria_utils.custom_commands.list": "Favorite commands: %s",
   "craftaria_utils.custom_commands.empty": "No custom commands.",
-  "craftaria_utils.custom_commands.button": "Customize",
+  "craftaria_utils.custom_commands.button": "Shortcuts",
   "key.craftaria_utils.fly": "Craftaria Utils: /fly",
-  "craftaria_utils.settings.fly_key": "Fly (/fly)"
+  "craftaria_utils.settings.fly_key": "Fly (/fly)",
+  "craftaria_utils.fly.only_ground": "/fly only on the ground: %s",
+  "craftaria_utils.fly.only_ground.description": "Blocks /fly shortcuts while airborne to prevent accidental toggles. Blocked presses are not queued for landing.",
+  "craftaria_utils.fly.ground_required": "Land before using the /fly shortcut."
 }

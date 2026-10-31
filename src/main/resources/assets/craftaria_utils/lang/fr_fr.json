@@ -222,7 +222,10 @@
   "craftaria_utils.custom_commands.saved": "Commande enregistrée.",
   "craftaria_utils.custom_commands.list": "Commandes favorites : %s",
   "craftaria_utils.custom_commands.empty": "Aucune commande personnalisée.",
-  "craftaria_utils.custom_commands.button": "Personnaliser",
+  "craftaria_utils.custom_commands.button": "Raccourci",
   "key.craftaria_utils.fly": "Craftaria Utils : /fly",
-  "craftaria_utils.settings.fly_key": "Vol (/fly)"
+  "craftaria_utils.settings.fly_key": "Vol (/fly)",
+  "craftaria_utils.fly.only_ground": "/fly au sol uniquement : %s",
+  "craftaria_utils.fly.only_ground.description": "Bloque les raccourcis /fly dans les airs, pour éviter une désactivation accidentelle. Aucun déclenchement différé à l’atterrissage.",
+  "craftaria_utils.fly.ground_required": "Pose-toi au sol pour utiliser le raccourci /fly."
 }

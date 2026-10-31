@@ -32,7 +32,7 @@ public final class AntiDrop {
 
     private static boolean uncertainNow() {
         var client = MinecraftClient.getInstance();
-        return client.world != null && ProtectedStacks.needsReselection(inventory(), client.world.getRegistryManager());
+        return fr.craftaria.utils.ServerArrival.isReady() && client.world != null && ProtectedStacks.needsReselection(inventory(), client.world.getRegistryManager());
     }
     private AntiDrop() { }
 
@@ -88,6 +88,7 @@ public final class AntiDrop {
             session=client.getNetworkHandler(); readyTicks=0; warned=false;
             ProtectedStacks.migrate(client.world.getRegistryManager());
         }
+        if (!fr.craftaria.utils.ServerArrival.isReady()) { readyTicks=0; return; }
         if (!ModConfig.get().antiDropEnabled || client.currentScreen != null || client.getOverlay() != null) return;
         if (++readyTicks < 60) return;
         uncertain=uncertainNow();

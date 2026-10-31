@@ -46,6 +46,7 @@ public final class ModConfig {
         catch (Exception ignored) { /* Keep current-session settings if disk is unavailable. */ }
     }
     public static final class Data {
+        public boolean flyOnlyOnGround = true;
         public boolean autoRepair = false;
         public int repairThresholdPercent = 50;
         public String wallpaper = "";

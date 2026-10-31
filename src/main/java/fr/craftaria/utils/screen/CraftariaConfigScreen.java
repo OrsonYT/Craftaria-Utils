@@ -101,10 +101,17 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
                 }));
             }
             case KEYS -> {
+                int spacing=keyRowSpacing();
                 addBindingRow(CraftariaUtilsClient.fourKey, "craftaria_utils.settings.four_key", y);
-                addBindingRow(CraftariaUtilsClient.loginKey, "craftaria_utils.settings.login_key", y+29);
-                addBindingRow(CraftariaUtilsClient.cookingKey, "craftaria_utils.settings.cooking_key", y+58);
-                addBindingRow(CraftariaUtilsClient.flyKey, "craftaria_utils.settings.fly_key", y+87);
+                addBindingRow(CraftariaUtilsClient.loginKey, "craftaria_utils.settings.login_key", y+spacing);
+                addBindingRow(CraftariaUtilsClient.cookingKey, "craftaria_utils.settings.cooking_key", y+spacing*2);
+                addBindingRow(CraftariaUtilsClient.flyKey, "craftaria_utils.settings.fly_key", y+spacing*3);
+                var groundOnly=addDrawableChild(new SettingsButton(contentX,y+spacing*4,contentWidth,
+                        () -> Text.translatable("craftaria_utils.fly.only_ground",Text.translatable(ModConfig.get().flyOnlyOnGround?"options.on":"options.off")), () -> {
+                    ModConfig.get().flyOnlyOnGround=!ModConfig.get().flyOnlyOnGround;
+                    ModConfig.save();
+                }));
+                groundOnly.setTooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.translatable("craftaria_utils.fly.only_ground.description")));
             }
             case ANTIDROP -> {
                 addDrawableChild(new SettingsButton(contentX,y,contentWidth,
@@ -183,6 +190,8 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
 
     private static String pageKey(Page page) { return "craftaria_utils.settings."+page.name().toLowerCase(java.util.Locale.ROOT); }
 
+    private int keyRowSpacing() { return Math.max(20,Math.min(29,(height-45-(bodyY+45)-22)/4)); }
+
     private void addBindingRow(KeyBinding binding, String label, int y) {
         int keyWidth = Math.min(115, contentWidth/2);
         addDrawableChild(new SettingsButton(contentX+contentWidth-keyWidth, y, keyWidth, () -> {
@@ -250,10 +259,11 @@ public final class CraftariaConfigScreen extends CraftariaScreen {
             if (y+103 < height-46) context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.password_storage"), contentX, y+83, contentWidth, 0xFF99968F);
         } else if (page==Page.COOKING) bindingLabel(context, "craftaria_utils.settings.cooking_key", y+35);
         else if (page==Page.KEYS) {
+            int spacing=keyRowSpacing();
             bindingLabel(context, "craftaria_utils.settings.four_key", y);
-            bindingLabel(context, "craftaria_utils.settings.login_key", y+29);
-            bindingLabel(context, "craftaria_utils.settings.cooking_key", y+58);
-            bindingLabel(context, "craftaria_utils.settings.fly_key", y+87);
+            bindingLabel(context, "craftaria_utils.settings.login_key", y+spacing);
+            bindingLabel(context, "craftaria_utils.settings.cooking_key", y+spacing*2);
+            bindingLabel(context, "craftaria_utils.settings.fly_key", y+spacing*3);
         } else if (page==Page.REPAIR) {
             context.drawTextWrapped(textRenderer, Text.translatable("craftaria_utils.settings.repair.note"), contentX, y+70, contentWidth, 0xFF99968F);
         } else if (page==Page.ANTIDROP) {
